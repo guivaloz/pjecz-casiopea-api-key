@@ -12,8 +12,8 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteRecuperacionOut(BaseModel):
     """Esquema para entregar recuperaciones"""
 
-    id: int
-    relacion_id: int
+    id: str
+    relacion_id: str
     relacion_nombre: str
     fecha: date
     nombre: str
@@ -27,10 +27,3 @@ class OneCitClienteRecuperacionOut(OneBaseOut):
     """Esquema para entregar una recuperación"""
 
     data: CitClienteRecuperacionOut | None = None
-
-
-class CitClientesRecuperacionesCreadosPorDiaOut(BaseModel):
-    """Esquema para entregar cantidades de recuperaciones creadas por dia"""
-
-    creado: date
-    cantidad: int

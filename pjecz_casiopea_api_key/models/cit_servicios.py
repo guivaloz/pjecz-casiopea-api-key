@@ -4,8 +4,10 @@ Cit Servicios, modelos
 
 from datetime import time
 from typing import List, Optional
+import uuid
 
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -19,10 +21,10 @@ class CitServicio(Base, UniversalMixin):
     __tablename__ = "cit_servicios"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Clave foránea
-    cit_categoria_id: Mapped[int] = mapped_column(ForeignKey("cit_categorias.id"), index=True)
+    cit_categoria_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("cit_categorias.id"), index=True)
     cit_categoria: Mapped["CitCategoria"] = relationship(back_populates="cit_servicios")
 
     # Columnas

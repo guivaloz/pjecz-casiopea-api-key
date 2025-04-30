@@ -19,7 +19,7 @@ class CitDiaInhabilIn(BaseModel):
 class CitDiaInhabilOut(CitDiaInhabilIn):
     """Esquema para entregar dias inhábiles"""
 
-    id: int
+    id: str
     model_config = ConfigDict(from_attributes=True)
 
 

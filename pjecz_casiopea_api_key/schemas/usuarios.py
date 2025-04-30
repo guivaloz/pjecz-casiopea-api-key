@@ -12,16 +12,13 @@ from ..dependencies.schemas_base import OneBaseOut
 class UsuarioOut(BaseModel):
     """Esquema para entregar usuarios"""
 
-    id: int
-    distrito_id: int
+    id: str
     distrito_clave: str
     distrito_nombre: str
     distrito_nombre_corto: str
     autoridad_clave: str
     autoridad_descripcion: str
     autoridad_descripcion_corta: str
-    oficina_id: int
-    oficina_clave: str
     email: str
     nombres: str
     apellido_paterno: str

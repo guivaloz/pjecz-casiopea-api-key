@@ -12,8 +12,8 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitHoraBloqueadaOut(BaseModel):
     """Esquema para entregar horas bloqueadas"""
 
-    id: int
-    oficina_id: int
+    id: str
+    oficina_id: str
     oficina_clave: str
     oficina_descripcion: str
     oficina_descripcion_corta: str

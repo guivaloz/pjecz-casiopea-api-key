@@ -129,7 +129,7 @@ def safe_string(input_str, max_len=250, do_unidecode=True, save_enie=False, to_u
 
 
 def safe_telefono(input_str) -> str:
-    """Safe telefono always ten digits"""
+    """Safe teléfono always ten digits"""
     if not isinstance(input_str, str) or input_str.strip() == "":
         return ""
     input_str = input_str.strip()

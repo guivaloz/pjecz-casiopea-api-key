@@ -1,51 +1,19 @@
 """
 Settings
-
-Para que la configuración no sea estática en el código,
-se utiliza la librería pydantic para cargar la configuración desde
-Google Secret Manager como primer opción, luego de un archivo .env
-que se usa en local y por último de variables de entorno.
-
-Para desarrollo debe crear un archivo .env en la raíz del proyecto
-con las siguientes variables:
-
-- DB_HOST
-- DB_PORT
-- DB_NAME
-- DB_USER
-- DB_PASS
-- ORIGINS
-- SALT
-
-Para producción vaya a Google Secret Manager en
-https://console.cloud.google.com/security/secret-manager
-y cree como secretos las siguientes variables de entorno
-
-- pjecz_casiopea_api_key_db_host
-- pjecz_casiopea_api_key_db_port
-- pjecz_casiopea_api_key_db_name
-- pjecz_casiopea_api_key_db_user
-- pjecz_casiopea_api_key_db_pass
-- pjecz_casiopea_api_key_origins
-- pjecz_casiopea_api_key_salt
-
-Y en el archivo app.yaml agregue las siguientes variables de entorno
-
-- PROJECT_ID: justicia-digital-gob-mx
-- SERVICE_PREFIX: pjecz_casiopea_api_key
 """
+
 import os
 from functools import lru_cache
 
 from google.cloud import secretmanager
 from pydantic_settings import BaseSettings
 
-PROJECT_ID = os.getenv("PROJECT_ID", "")  # Por defecto esta vacio, esto significa estamos en modo local
-SERVICE_PREFIX = os.getenv("SERVICE_PREFIX", "pjecz_citas_admin_api_key")
+PROJECT_ID = os.getenv("PROJECT_ID", "")  # Por defecto está vacío, esto significa estamos en modo local
+SERVICE_PREFIX = os.getenv("SERVICE_PREFIX", "pjecz_casiopea_flask")
 
 
 def get_secret(secret_id: str) -> str:
-    """Get secret from google cloud secret manager"""
+    """Get secret from Google Cloud Secret Manager"""
 
     # If not in google cloud, return environment variable
     if PROJECT_ID == "":

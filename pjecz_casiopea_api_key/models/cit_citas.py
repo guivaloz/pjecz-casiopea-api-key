@@ -3,9 +3,11 @@ Cit Citas, modelos
 """
 
 from datetime import datetime
+import uuid
 
 import pytz
 from sqlalchemy import Enum, ForeignKey, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -26,14 +28,14 @@ class CitCita(Base, UniversalMixin):
     __tablename__ = "cit_citas"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
-    cit_cliente_id: Mapped[int] = mapped_column(ForeignKey("cit_clientes.id"), index=True)
+    cit_cliente_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("cit_clientes.id"), index=True)
     cit_cliente: Mapped["CitCliente"] = relationship(back_populates="cit_citas")
-    cit_servicio_id: Mapped[int] = mapped_column(ForeignKey("cit_servicios.id"), index=True)
+    cit_servicio_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("cit_servicios.id"), index=True)
     cit_servicio: Mapped["CitServicio"] = relationship(back_populates="cit_citas")
-    oficina_id: Mapped[int] = mapped_column(ForeignKey("oficinas.id"), index=True)
+    oficina_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("oficinas.id"), index=True)
     oficina: Mapped["Oficina"] = relationship(back_populates="cit_citas")
 
     # Columnas

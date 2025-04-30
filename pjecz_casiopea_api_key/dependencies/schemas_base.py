@@ -14,5 +14,4 @@ class OneBaseOut(BaseModel):
 
     success: bool
     message: str
-    errors: list[str] | None = None
     data: list[T] | None = None

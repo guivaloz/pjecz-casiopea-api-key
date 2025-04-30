@@ -2,7 +2,10 @@
 Permisos, modelos
 """
 
+import uuid
+
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -28,12 +31,12 @@ class Permiso(Base, UniversalMixin):
     __tablename__ = "permisos"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
-    rol_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), index=True)
+    rol_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("roles.id"), index=True)
     rol: Mapped["Rol"] = relationship(back_populates="permisos")
-    modulo_id: Mapped[int] = mapped_column(ForeignKey("modulos.id"), index=True)
+    modulo_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("modulos.id"), index=True)
     modulo: Mapped["Modulo"] = relationship(back_populates="permisos")
 
     # Columnas
