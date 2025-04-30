@@ -76,7 +76,9 @@ async def paginado_cit_clientes_registros(
         desde_dt = datetime(year=creado_desde.year, month=creado_desde.month, day=creado_desde.day, hour=0, minute=0, second=0)
         consulta = consulta.filter(CitClienteRegistro.creado >= desde_dt)
     if creado is None and creado_hasta is not None:
-        hasta_dt = datetime(year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59)
+        hasta_dt = datetime(
+            year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59
+        )
         consulta = consulta.filter(CitClienteRegistro.creado <= hasta_dt)
     if curp is not None:
         curp = safe_string(curp)
