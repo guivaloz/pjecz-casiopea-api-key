@@ -2,7 +2,10 @@
 Usuarios-Oficinas, modelos
 """
 
+import uuid
+
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -16,12 +19,12 @@ class UsuarioOficina(Base, UniversalMixin):
     __tablename__ = "usuarios_oficinas"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Clave foránea
-    oficina_id: Mapped[int] = mapped_column(ForeignKey("oficinas.id"), index=True)
+    oficina_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("oficinas.id"), index=True)
     oficina: Mapped["Oficina"] = relationship(back_populates="usuarios_oficinas")
-    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"), index=True)
+    usuario_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("usuarios.id"), index=True)
     usuario: Mapped["Usuario"] = relationship(back_populates="usuarios_oficinas")
 
     # Columnas

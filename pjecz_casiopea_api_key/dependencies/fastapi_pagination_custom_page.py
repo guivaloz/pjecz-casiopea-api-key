@@ -31,7 +31,6 @@ class CustomPage(AbstractPage[T], Generic[T], ABC):
 
     success: bool
     message: str
-    errors: list[str]
     data: Sequence[T]
 
     total: Optional[GreaterEqualZero]
@@ -57,7 +56,6 @@ class CustomPage(AbstractPage[T], Generic[T], ABC):
             return cls(
                 success=False,
                 message="No se encontraron registros",
-                errors=[],
                 data=[],
                 total=0,
                 limit=raw_params.limit,
@@ -67,7 +65,6 @@ class CustomPage(AbstractPage[T], Generic[T], ABC):
         return cls(
             success=True,
             message="Success",
-            errors=[],
             data=items,
             total=total,
             limit=raw_params.limit,

@@ -12,8 +12,8 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitServicioOut(BaseModel):
     """Esquema para entregar servicios"""
 
-    id: int
-    cit_categoria_id: int
+    id: str
+    cit_categoria_id: str
     cit_categoria_nombre: str
     clave: str
     descripcion: str

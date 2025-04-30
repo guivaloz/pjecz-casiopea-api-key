@@ -3,8 +3,10 @@ Distritos, modelos
 """
 
 from typing import List
+import uuid
 
 from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -18,7 +20,7 @@ class Distrito(Base, UniversalMixin):
     __tablename__ = "distritos"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Columnas
     clave: Mapped[str] = mapped_column(String(16), unique=True)
@@ -30,8 +32,6 @@ class Distrito(Base, UniversalMixin):
 
     # Hijos
     autoridades: Mapped[List["Autoridad"]] = relationship("Autoridad", back_populates="distrito")
-    domicilios: Mapped[List["Domicilio"]] = relationship("Domicilio", back_populates="distrito")
-    oficinas: Mapped[List["Oficina"]] = relationship("Oficina", back_populates="distrito")
 
     def __repr__(self):
         """Representación"""

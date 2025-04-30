@@ -3,8 +3,10 @@ Domicilios, modelos
 """
 
 from typing import List
+import uuid
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -18,11 +20,7 @@ class Domicilio(Base, UniversalMixin):
     __tablename__ = "domicilios"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
-
-    # Clave foránea
-    distrito_id: Mapped[int] = mapped_column(ForeignKey("distritos.id"), index=True)
-    distrito: Mapped["Distrito"] = relationship(back_populates="domicilios")
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Columnas
     edificio: Mapped[str] = mapped_column(String(64), unique=True)
@@ -37,21 +35,6 @@ class Domicilio(Base, UniversalMixin):
 
     # Hijos
     oficinas: Mapped[List["Oficina"]] = relationship("Oficina", back_populates="domicilio")
-
-    @property
-    def distrito_clave(self):
-        """Clave del distrito"""
-        return self.distrito.clave
-
-    @property
-    def distrito_nombre(self):
-        """Nombre del distrito"""
-        return self.distrito.nombre
-
-    @property
-    def distrito_nombre_corto(self):
-        """Nombre corto del distrito"""
-        return self.distrito.nombre_corto
 
     def __repr__(self):
         """Representación"""

@@ -10,11 +10,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class DomicilioOut(BaseModel):
     """Esquema para entregar domicilios"""
 
-    id: int
-    distrito_id: int
-    distrito_clave: str
-    distrito_nombre: str
-    distrito_nombre_corto: str
+    id: str
     edificio: str
     estado: str
     municipio: str

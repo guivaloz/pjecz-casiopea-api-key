@@ -3,8 +3,10 @@ Cit Dias Inhábiles, modelos
 """
 
 from datetime import date
+import uuid
 
 from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..dependencies.database import Base
@@ -18,7 +20,7 @@ class CitDiaInhabil(Base, UniversalMixin):
     __tablename__ = "cit_dias_inhabiles"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Columnas
     fecha: Mapped[date] = mapped_column(unique=True)

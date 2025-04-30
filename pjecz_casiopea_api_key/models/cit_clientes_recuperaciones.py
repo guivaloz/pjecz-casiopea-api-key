@@ -3,8 +3,10 @@ Cit Clientes Recuperaciones, modelos
 """
 
 from datetime import datetime
+import uuid
 
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -18,10 +20,10 @@ class CitClienteRecuperacion(Base, UniversalMixin):
     __tablename__ = "cit_clientes_recuperaciones"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Clave foránea
-    cit_cliente_id: Mapped[int] = mapped_column(ForeignKey("cit_clientes.id"), index=True)
+    cit_cliente_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("cit_clientes.id"), index=True)
     cit_cliente: Mapped["CitCliente"] = relationship(back_populates="cit_clientes_recuperaciones")
 
     # Columnas

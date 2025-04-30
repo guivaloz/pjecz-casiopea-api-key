@@ -9,7 +9,6 @@ from fastapi_pagination import add_pagination
 from .settings import get_settings
 
 from .routers.autoridades import autoridades
-from .routers.bitacoras import bitacoras
 from .routers.cit_categorias import cit_categorias
 from .routers.cit_citas import cit_citas
 from .routers.cit_clientes import cit_clientes
@@ -21,7 +20,6 @@ from .routers.cit_oficinas_servicios import cit_oficinas_servicios
 from .routers.cit_servicios import cit_servicios
 from .routers.distritos import distritos
 from .routers.domicilios import domicilios
-from .routers.entradas_salidas import entradas_salidas
 from .routers.modulos import modulos
 from .routers.oficinas import oficinas
 from .routers.permisos import permisos
@@ -51,7 +49,6 @@ app.add_middleware(
 
 # Rutas
 app.include_router(autoridades, tags=["autoridades"])
-app.include_router(bitacoras, include_in_schema=False)
 app.include_router(cit_categorias, tags=["citas"])
 app.include_router(cit_citas, tags=["citas"])
 app.include_router(cit_clientes, tags=["citas"])
@@ -63,7 +60,6 @@ app.include_router(cit_oficinas_servicios, tags=["citas"])
 app.include_router(cit_servicios, tags=["citas"])
 app.include_router(distritos, tags=["autoridades"])
 app.include_router(domicilios, tags=["oficinas"])
-app.include_router(entradas_salidas, include_in_schema=False)
 app.include_router(modulos, include_in_schema=False)
 app.include_router(oficinas, tags=["oficinas"])
 app.include_router(permisos, include_in_schema=False)

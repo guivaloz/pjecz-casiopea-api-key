@@ -4,8 +4,10 @@ Oficinas, modelos
 
 from datetime import time
 from typing import List
+import uuid
 
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -19,12 +21,10 @@ class Oficina(Base, UniversalMixin):
     __tablename__ = "oficinas"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
-    distrito_id: Mapped[int] = mapped_column(ForeignKey("distritos.id"), index=True)
-    distrito: Mapped["Distrito"] = relationship(back_populates="oficinas")
-    domicilio_id: Mapped[int] = mapped_column(ForeignKey("domicilios.id"), index=True)
+    domicilio_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("domicilios.id"), index=True)
     domicilio: Mapped["Domicilio"] = relationship(back_populates="oficinas")
 
     # Columnas
@@ -42,23 +42,7 @@ class Oficina(Base, UniversalMixin):
     cit_citas: Mapped[List["CitCita"]] = relationship("CitCita", back_populates="oficina")
     cit_horas_bloqueadas: Mapped[List["CitHoraBloqueada"]] = relationship("CitHoraBloqueada", back_populates="oficina")
     cit_oficinas_servicios: Mapped[List["CitOficinaServicio"]] = relationship("CitOficinaServicio", back_populates="oficina")
-    usuarios: Mapped[List["Usuario"]] = relationship("Usuario", back_populates="oficina")
     usuarios_oficinas: Mapped[List["UsuarioOficina"]] = relationship("UsuarioOficina", back_populates="oficina")
-
-    @property
-    def distrito_clave(self):
-        """Clave del distrito"""
-        return self.distrito.clave
-
-    @property
-    def distrito_nombre(self):
-        """Nombre del distrito"""
-        return self.distrito.nombre
-
-    @property
-    def distrito_nombre_corto(self):
-        """Nombre corto del distrito"""
-        return self.distrito.nombre_corto
 
     @property
     def domicilio_completo(self):

@@ -10,12 +10,12 @@ from ..dependencies.schemas_base import OneBaseOut
 class AutoridadOut(BaseModel):
     """Esquema para entregar autoridades"""
 
-    id: int
-    distrito_id: int
+    id: str
+    distrito_id: str
     distrito_clave: str
     distrito_nombre: str
     distrito_nombre_corto: str
-    materia_id: int
+    materia_id: str
     materia_clave: str
     materia_nombre: str
     clave: str

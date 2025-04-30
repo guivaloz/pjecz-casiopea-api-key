@@ -12,7 +12,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteOut(BaseModel):
     """Esquema para entregar clientes"""
 
-    id: int
+    id: str
     nombres: str
     apellido_primero: str
     apellido_segundo: str
@@ -38,10 +38,3 @@ class OneCitClienteOut(OneBaseOut):
     """Esquema para entregar un cliente"""
 
     data: CitClienteOut | None = None
-
-
-class CitClientesCreadosPorDiaOut(BaseModel):
-    """Esquema para entregar cantidades de clientes creados por dia"""
-
-    creado: date
-    cantidad: int

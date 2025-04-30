@@ -1,5 +1,5 @@
 """
-Usuarios v4, authentications
+Authentications
 """
 
 import re

@@ -4,8 +4,10 @@ Usuarios, modelos
 
 from datetime import datetime
 from typing import List, Optional
+import uuid
 
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -20,13 +22,11 @@ class Usuario(Base, UniversalMixin):
     __tablename__ = "usuarios"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
-    autoridad_id: Mapped[int] = mapped_column(ForeignKey("autoridades.id"), index=True)
+    autoridad_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("autoridades.id"), index=True)
     autoridad: Mapped["Autoridad"] = relationship("Autoridad", back_populates="usuarios")
-    oficina_id: Mapped[int] = mapped_column(ForeignKey("oficinas.id"), index=True)
-    oficina: Mapped["Oficina"] = relationship("Oficina", back_populates="usuarios")
 
     # Columnas
     email: Mapped[str] = mapped_column(String(256), unique=True, index=True)

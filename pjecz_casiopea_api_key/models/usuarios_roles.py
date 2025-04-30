@@ -2,7 +2,10 @@
 Usuarios-Roles, modelos
 """
 
+import uuid
+
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -16,7 +19,7 @@ class UsuarioRol(Base, UniversalMixin):
     __tablename__ = "usuarios_roles"
 
     # Clave primaria
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
     rol_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), index=True)
