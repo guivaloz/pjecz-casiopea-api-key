@@ -33,11 +33,9 @@ async def detalle_cit_citas(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_cita = database.query(CitCita).get(cit_cita_id)
     if not cit_cita:
-        message = "No existe esa cita"
-        return OneCitCitaOut(success=False, message=message, errors=[message])
+        return OneCitCitaOut(success=False, message="No existe esa cita")
     if cit_cita.estatus != "A":
-        message = "No está habilitada esa cita"
-        return OneCitCitaOut(success=False, message=message, errors=[message])
+        return OneCitCitaOut(success=False, message="No está habilitada esa cita")
     return OneCitCitaOut(success=True, message=f"Detalle de {cit_cita_id}", data=CitCitaOut.model_validate(cit_cita))
 
 

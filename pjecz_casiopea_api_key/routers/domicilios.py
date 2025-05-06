@@ -28,11 +28,9 @@ async def detalle_domicilios(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     domicilio = database.query(Domicilio).get(domicilio_id)
     if not domicilio:
-        message = "No existe ese domicilio"
-        return OneDomicilioOut(success=False, message=message, errors=[message])
+        return OneDomicilioOut(success=False, message="No existe ese domicilio")
     if domicilio.estatus != "A":
-        message = "No está habilitado ese domicilio"
-        return OneDomicilioOut(success=False, message=message, errors=[message])
+        return OneDomicilioOut(success=False, message="No está habilitado ese domicilio")
     return OneDomicilioOut(success=True, message=f"Detalle de {domicilio_id}", data=DomicilioOut.model_validate(domicilio))
 
 

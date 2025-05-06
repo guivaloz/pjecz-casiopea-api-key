@@ -35,10 +35,9 @@ async def detalle_cit_clientes(
     try:
         cit_cliente = database.query(CitCliente).filter_by(email=email).one()
     except (MultipleResultsFound, NoResultFound) as error:
-        return OneCitClienteOut(success=False, message="No existe ese cliente", errors=[str(error)])
+        return OneCitClienteOut(success=False, message="No existe ese cliente")
     if cit_cliente.estatus != "A":
-        message = "No está habilitada ese cliente"
-        return OneCitClienteOut(success=False, message=message, errors=[message])
+        return OneCitClienteOut(success=False, message="No está habilitada ese cliente")
     return OneCitClienteOut(success=True, message=f"Detalle de {email}", data=CitClienteOut.model_validate(cit_cliente))
 
 

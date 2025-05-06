@@ -31,11 +31,10 @@ async def detalle_cit_dias_inhabiles(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         cit_dia_inhabil = database.query(CitDiaInhabil).filter_by(fecha=fecha).one()
-    except (MultipleResultsFound, NoResultFound) as error:
-        return OneCitDiaInhabilOut(success=False, message="No existe ese día inhábil", errors=[str(error)])
+    except (MultipleResultsFound, NoResultFound):
+        return OneCitDiaInhabilOut(success=False, message="No existe ese día inhábil")
     if cit_dia_inhabil.estatus != "A":
-        message = "No está habilitado ese día inhábil"
-        return OneCitDiaInhabilOut(success=False, message=message, errors=[message])
+        return OneCitDiaInhabilOut(success=False, message="No está habilitado ese día inhábil")
     return OneCitDiaInhabilOut(
         success=True, message=f"Detalle de {fecha}", data=CitDiaInhabilOut.model_validate(cit_dia_inhabil)
     )

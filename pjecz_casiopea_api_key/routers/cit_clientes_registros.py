@@ -30,11 +30,9 @@ async def detalle_cit_clientes_registros(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_cliente_registro = database.query(CitClienteRegistro).get(cit_cliente_registro_id)
     if not cit_cliente_registro:
-        message = "No existe ese registro"
-        return OneCitClienteRegistroOut(success=False, message=message, errors=[message])
+        return OneCitClienteRegistroOut(success=False, message="No existe ese registro")
     if cit_cliente_registro.estatus != "A":
-        message = "No está habilitada ese registro"
-        return OneCitClienteRegistroOut(success=False, message=message, errors=[message])
+        return OneCitClienteRegistroOut(success=False, message="No está habilitada ese registro")
     return OneCitClienteRegistroOut(
         success=True,
         message=f"Detalle de {cit_cliente_registro_id}",

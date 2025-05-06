@@ -28,11 +28,9 @@ async def detalle_cit_categorias(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_categoria = database.query(CitCategoria).get(cit_categoria_id)
     if not cit_categoria:
-        message = "No existe esa categoría"
-        return OneCitCategoriaOut(success=False, message=message, errors=[message])
+        return OneCitCategoriaOut(success=False, message="No existe esa categoría")
     if cit_categoria.estatus != "A":
-        message = "No está habilitada esa categoría"
-        return OneCitCategoriaOut(success=False, message=message, errors=[message])
+        return OneCitCategoriaOut(success=False, message="No está habilitada esa categoría")
     return OneCitCategoriaOut(
         success=True, message=f"Detalle de {cit_categoria_id}", data=CitCategoriaOut.model_validate(cit_categoria)
     )
@@ -46,4 +44,4 @@ async def paginado_cit_categorias(
     """Paginado de categorías"""
     if current_user.permissions.get("CIT CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(database.query(CitCategoria).filter_by(estatus="A").order_by(CitCategoria.nombre))
+    return paginate(database.query(CitCategoria).filter_by(estatus="A").order_by(CitCategoria.clave))

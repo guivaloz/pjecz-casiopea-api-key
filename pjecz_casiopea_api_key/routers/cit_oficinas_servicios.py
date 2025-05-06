@@ -31,11 +31,9 @@ async def detalle_cit_oficinas_servicios(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_oficina_servicio = database.query(CitOficinaServicio).get(cit_oficina_servicio_id)
     if not cit_oficina_servicio:
-        message = "No existe ese servicio de una oficina"
-        return OneCitOficinaServicioOut(success=False, message=message, errors=[message])
+        return OneCitOficinaServicioOut(success=False, message="No existe ese servicio de una oficina")
     if cit_oficina_servicio.estatus != "A":
-        message = "No está habilitada ese servicio de una oficina"
-        return OneCitOficinaServicioOut(success=False, message=message, errors=[message])
+        return OneCitOficinaServicioOut(success=False, message="No está habilitada ese servicio de una oficina")
     return OneCitOficinaServicioOut(
         success=True,
         message=f"Detalle de {cit_oficina_servicio_id}",

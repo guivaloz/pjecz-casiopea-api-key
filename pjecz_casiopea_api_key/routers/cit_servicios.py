@@ -35,10 +35,9 @@ async def detalle_cit_servicios(
     try:
         cit_servicio = database.query(CitServicio).filter_by(clave=clave).one()
     except (MultipleResultsFound, NoResultFound) as error:
-        return OneCitServicioOut(success=False, message="No existe ese servicio", errors=[str(error)])
+        return OneCitServicioOut(success=False, message="No existe ese servicio")
     if cit_servicio.estatus != "A":
-        message = "No está habilitado ese servicio"
-        return OneCitServicioOut(success=False, message=message, errors=[message])
+        return OneCitServicioOut(success=False, message="No está habilitado ese servicio")
     return OneCitServicioOut(success=True, message=f"Detalle de {clave}", data=CitServicioOut.model_validate(cit_servicio))
 
 

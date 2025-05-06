@@ -32,11 +32,9 @@ async def detalle_cit_horas_bloqueadas(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_hora_bloqueada = database.query(CitHoraBloqueada).get(cit_hora_bloqueada_id)
     if not cit_hora_bloqueada:
-        message = "No existe esa hora bloqueada"
-        return OneCitHoraBloqueadaOut(success=False, message=message, errors=[message])
+        return OneCitHoraBloqueadaOut(success=False, message="No existe esa hora bloqueada")
     if cit_hora_bloqueada.estatus != "A":
-        message = "No está habilitada esa hora bloqueada"
-        return OneCitHoraBloqueadaOut(success=False, message=message, errors=[message])
+        return OneCitHoraBloqueadaOut(success=False, message="No está habilitada esa hora bloqueada")
     return OneCitHoraBloqueadaOut(
         success=True,
         message=f"Detalle de {cit_hora_bloqueada_id}",

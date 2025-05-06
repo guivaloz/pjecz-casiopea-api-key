@@ -37,10 +37,9 @@ async def detalle_autoridad(
     try:
         autoridad = database.query(Autoridad).filter_by(clave=clave).one()
     except (MultipleResultsFound, NoResultFound) as error:
-        return OneAutoridadOut(success=False, message="No existe esa autoridad", errors=[str(error)])
+        return OneAutoridadOut(success=False, message="No existe esa autoridad")
     if autoridad.estatus != "A":
-        message = "No está habilitada esa autoridad"
-        return OneAutoridadOut(success=False, message=message, errors=[message])
+        return OneAutoridadOut(success=False, message="No está habilitada esa autoridad")
     return OneAutoridadOut(success=True, message=f"Detalle de {clave}", data=AutoridadOut.model_validate(autoridad))
 
 
