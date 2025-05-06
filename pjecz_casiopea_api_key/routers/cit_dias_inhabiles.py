@@ -36,7 +36,9 @@ async def detalle_cit_dias_inhabiles(
     if cit_dia_inhabil.estatus != "A":
         return OneCitDiaInhabilOut(success=False, message="No está habilitado ese día inhábil")
     return OneCitDiaInhabilOut(
-        success=True, message=f"Detalle de {fecha}", data=CitDiaInhabilOut.model_validate(cit_dia_inhabil)
+        success=True,
+        message=f"Detalle de {fecha}",
+        data=CitDiaInhabilOut.model_validate(cit_dia_inhabil),
     )
 
 

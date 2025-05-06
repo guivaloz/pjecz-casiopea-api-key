@@ -10,7 +10,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_clave
+from ..dependencies.safe_string import safe_clave, safe_uuid
 from ..models.cit_oficinas_servicios import CitOficinaServicio
 from ..models.cit_servicios import CitServicio
 from ..models.oficinas import Oficina
@@ -24,11 +24,15 @@ cit_oficinas_servicios = APIRouter(prefix="/api/v5/cit_oficinas_servicios")
 async def detalle_cit_oficinas_servicios(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    cit_oficina_servicio_id: int,
+    cit_oficina_servicio_id: str,
 ):
     """Detalle de un servicio de una oficina a partir de su ID"""
     if current_user.permissions.get("CIT OFICINAS SERVICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        cit_oficina_servicio_id = safe_uuid(cit_oficina_servicio_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la UUID")
     cit_oficina_servicio = database.query(CitOficinaServicio).get(cit_oficina_servicio_id)
     if not cit_oficina_servicio:
         return OneCitOficinaServicioOut(success=False, message="No existe ese servicio de una oficina")

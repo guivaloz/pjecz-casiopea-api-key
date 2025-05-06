@@ -11,7 +11,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_curp, safe_email
+from ..dependencies.safe_string import safe_curp, safe_email, safe_uuid
 from ..models.cit_clientes import CitCliente
 from ..models.cit_clientes_recuperaciones import CitClienteRecuperacion
 from ..models.permisos import Permiso
