@@ -11,7 +11,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_curp, safe_email
+from ..dependencies.safe_string import safe_curp, safe_email, safe_uuid
 from ..models.cit_clientes import CitCliente
 from ..models.cit_clientes_recuperaciones import CitClienteRecuperacion
 from ..models.permisos import Permiso
@@ -31,11 +31,9 @@ async def detalle_cit_clientes_recuperaciones(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     cit_cliente_recuperacion = database.query(CitClienteRecuperacion).get(cit_cliente_recuperacion_id)
     if not cit_cliente_recuperacion:
-        message = "No existe esa recuperación"
-        return OneCitClienteRecuperacionOut(success=False, message=message, errors=[message])
+        return OneCitClienteRecuperacionOut(success=False, message="No existe esa recuperación")
     if cit_cliente_recuperacion.estatus != "A":
-        message = "No está habilitada esa recuperación"
-        return OneCitClienteRecuperacionOut(success=False, message=message, errors=[message])
+        return OneCitClienteRecuperacionOut(success=False, message="No está habilitada esa recuperación")
     return OneCitClienteRecuperacionOut(
         success=True,
         message=f"Detalle de {cit_cliente_recuperacion_id}",

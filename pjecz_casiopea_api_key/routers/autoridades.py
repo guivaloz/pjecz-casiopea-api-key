@@ -36,11 +36,10 @@ async def detalle_autoridad(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         autoridad = database.query(Autoridad).filter_by(clave=clave).one()
-    except (MultipleResultsFound, NoResultFound) as error:
-        return OneAutoridadOut(success=False, message="No existe esa autoridad", errors=[str(error)])
+    except (MultipleResultsFound, NoResultFound):
+        return OneAutoridadOut(success=False, message="No existe esa autoridad")
     if autoridad.estatus != "A":
-        message = "No está habilitada esa autoridad"
-        return OneAutoridadOut(success=False, message=message, errors=[message])
+        return OneAutoridadOut(success=False, message="No está habilitada esa autoridad")
     return OneAutoridadOut(success=True, message=f"Detalle de {clave}", data=AutoridadOut.model_validate(autoridad))
 
 
@@ -62,7 +61,7 @@ async def paginado_autoridades(
             distrito_clave = safe_clave(distrito_clave)
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave del distrito")
-        consulta = consulta.join(Distrito).filter(Distrito.clave == distrito_clave).filter(Distrito.estatus == "A")
+        consulta = consulta.join(Distrito).filter(Distrito.clave == distrito_clave)
     if es_jurisdiccional is not None:
         consulta = consulta.filter(Autoridad.es_jurisdiccional == es_jurisdiccional)
     if es_notaria is not None:
@@ -72,5 +71,5 @@ async def paginado_autoridades(
             materia_clave = safe_clave(materia_clave)
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la materia")
-        consulta = consulta.join(Materia).filter(Materia.clave == materia_clave).filter(Materia.estatus == "A")
+        consulta = consulta.join(Materia).filter(Materia.clave == materia_clave)
     return paginate(consulta.filter(Autoridad.estatus == "A").order_by(Autoridad.clave))

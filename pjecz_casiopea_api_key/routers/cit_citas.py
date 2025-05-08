@@ -7,12 +7,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_clave, safe_curp, safe_email, safe_string
+from ..dependencies.safe_string import safe_clave, safe_curp, safe_email, safe_string, safe_uuid
 from ..models.cit_citas import CitCita
 from ..models.cit_clientes import CitCliente
 from ..models.oficinas import Oficina
@@ -26,18 +25,20 @@ cit_citas = APIRouter(prefix="/api/v5/cit_citas")
 async def detalle_cit_citas(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    cit_cita_id: int,
+    cit_cita_id: str,
 ):
     """Detalle de una cita a partir de su ID"""
     if current_user.permissions.get("CIT CITAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        cit_cita_id = safe_uuid(cit_cita_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la UUID")
     cit_cita = database.query(CitCita).get(cit_cita_id)
     if not cit_cita:
-        message = "No existe esa cita"
-        return OneCitCitaOut(success=False, message=message, errors=[message])
+        return OneCitCitaOut(success=False, message="No existe esa cita")
     if cit_cita.estatus != "A":
-        message = "No está habilitada esa cita"
-        return OneCitCitaOut(success=False, message=message, errors=[message])
+        return OneCitCitaOut(success=False, message="No está habilitada esa cita")
     return OneCitCitaOut(success=True, message=f"Detalle de {cit_cita_id}", data=CitCitaOut.model_validate(cit_cita))
 
 

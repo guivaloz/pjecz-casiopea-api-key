@@ -37,11 +37,11 @@ async def detalle_usuario(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válido el email")
     try:
         usuario = database.query(Usuario).filter_by(email=email).one()
-    except (MultipleResultsFound, NoResultFound) as error:
-        return OneUsuarioOut(success=False, message="No existe ese usuario", errors=[str(error)])
+    except (MultipleResultsFound, NoResultFound):
+        return OneUsuarioOut(success=False, message="No existe ese usuario")
     if usuario.estatus != "A":
         message = "No está habilitado ese usuario"
-        return OneUsuarioOut(success=False, message=message, errors=[message])
+        return OneUsuarioOut(success=False, message=message)
     return OneUsuarioOut(success=True, message=f"Detalle de {email}", data=UsuarioOut.model_validate(usuario))
 
 

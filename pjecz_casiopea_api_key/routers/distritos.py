@@ -34,11 +34,10 @@ async def detalle_distrito(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         distrito = database.query(Distrito).filter_by(clave=clave).one()
-    except (MultipleResultsFound, NoResultFound) as error:
-        return OneDistritoOut(success=False, message="No existe ese distrito", errors=[str(error)])
+    except (MultipleResultsFound, NoResultFound):
+        return OneDistritoOut(success=False, message="No existe ese distrito")
     if distrito.estatus != "A":
-        message = "No está habilitado ese distrito"
-        return OneDistritoOut(success=False, message=message, errors=[message])
+        return OneDistritoOut(success=False, message="No está habilitado ese distrito")
     return OneDistritoOut(success=True, message=f"Detalle de {clave}", data=DistritoOut.model_validate(distrito))
 
 
