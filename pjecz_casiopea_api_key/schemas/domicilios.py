@@ -2,6 +2,8 @@
 Domicilios, esquemas de pydantic
 """
 
+import uuid
+
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -10,7 +12,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class DomicilioOut(BaseModel):
     """Esquema para entregar domicilios"""
 
-    id: str
+    id: uuid.UUID
     edificio: str
     estado: str
     municipio: str

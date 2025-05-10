@@ -2,6 +2,8 @@
 Permisos, esquemas de pydantic
 """
 
+import uuid
+
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -10,7 +12,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class PermisoOut(BaseModel):
     """Esquema para entregar permisos"""
 
-    id: str
+    id: uuid.UUID
     rol_id: str
     rol_nombre: str
     modulo_id: str

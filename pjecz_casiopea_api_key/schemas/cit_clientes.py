@@ -3,6 +3,7 @@ Cit Clientes, esquemas de pydantic
 """
 
 from datetime import date, datetime
+import uuid
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,7 +13,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteOut(BaseModel):
     """Esquema para entregar clientes"""
 
-    id: str
+    id: uuid.UUID
     nombres: str
     apellido_primero: str
     apellido_segundo: str

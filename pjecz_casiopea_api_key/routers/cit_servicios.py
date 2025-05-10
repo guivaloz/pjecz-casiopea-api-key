@@ -45,7 +45,7 @@ async def detalle_cit_servicios(
 async def paginado_cit_servicios(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    cit_categoria_id: int = None,
+    cit_categoria_id: str = None,
 ):
     """Paginado de servicios"""
     if current_user.permissions.get("CIT SERVICIOS", 0) < Permiso.VER:

@@ -3,23 +3,19 @@ Cit Dias Inhábiles, esquemas de pydantic
 """
 
 from datetime import date
+import uuid
 
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
 
 
-class CitDiaInhabilIn(BaseModel):
-    """Esquema para recibir un día inhábil"""
-
-    fecha: date
-    descripcion: str
-
-
-class CitDiaInhabilOut(CitDiaInhabilIn):
+class CitDiaInhabilOut(BaseModel):
     """Esquema para entregar dias inhábiles"""
 
-    id: str
+    id: uuid.UUID
+    fecha: date
+    descripcion: str
     model_config = ConfigDict(from_attributes=True)
 
 

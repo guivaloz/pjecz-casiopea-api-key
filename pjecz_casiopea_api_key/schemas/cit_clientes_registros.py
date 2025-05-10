@@ -2,7 +2,8 @@
 Cit Clientes Registros, esquemas de pydantic
 """
 
-from datetime import date, datetime
+from datetime import datetime
+import uuid
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,7 +13,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteRegistroOut(BaseModel):
     """Esquema para entregar registros de clientes"""
 
-    id: str
+    id: uuid.UUID
     nombres: str
     apellido_primero: str
     apellido_segundo: str

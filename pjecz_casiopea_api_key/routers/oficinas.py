@@ -47,7 +47,7 @@ async def paginado_oficinas(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     distrito_clave: str = None,
-    domicilio_id: int = None,
+    domicilio_id: str = None,
     es_jurisdiccional: bool = None,
 ):
     """Paginado de oficinas que pueden agendar citas"""

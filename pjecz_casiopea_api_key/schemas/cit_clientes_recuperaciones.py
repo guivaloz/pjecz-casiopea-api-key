@@ -3,6 +3,7 @@ Cit Clientes Recuperaciones, esquemas de pydantic
 """
 
 from datetime import date
+import uuid
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,8 +13,8 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteRecuperacionOut(BaseModel):
     """Esquema para entregar recuperaciones"""
 
-    id: str
-    relacion_id: str
+    id: uuid.UUID
+    relacion_id: uuid.UUID
     relacion_nombre: str
     fecha: date
     nombre: str

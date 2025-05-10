@@ -2,6 +2,8 @@
 Oficinas, esquemas de pydantic
 """
 
+import uuid
+
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -10,7 +12,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class OficinaOut(BaseModel):
     """Esquema para entregar oficinas"""
 
-    id: str
+    id: uuid.UUID
     domicilio_id: str
     domicilio_completo: str
     domicilio_edificio: str

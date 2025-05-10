@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
-from .settings import get_settings
+from .config.settings import get_settings
 
 from .routers.autoridades import autoridades
 from .routers.cit_categorias import cit_categorias
@@ -20,6 +20,7 @@ from .routers.cit_oficinas_servicios import cit_oficinas_servicios
 from .routers.cit_servicios import cit_servicios
 from .routers.distritos import distritos
 from .routers.domicilios import domicilios
+from .routers.materias import materias
 from .routers.modulos import modulos
 from .routers.oficinas import oficinas
 from .routers.permisos import permisos
@@ -41,7 +42,7 @@ app = FastAPI(
 settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.origins.split(","),
+    allow_origins=settings.ORIGINS.split(","),
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -60,6 +61,7 @@ app.include_router(cit_oficinas_servicios, tags=["citas"])
 app.include_router(cit_servicios, tags=["citas"])
 app.include_router(distritos, tags=["autoridades"])
 app.include_router(domicilios, tags=["oficinas"])
+app.include_router(materias, tags=["materias"])
 app.include_router(modulos, include_in_schema=False)
 app.include_router(oficinas, tags=["oficinas"])
 app.include_router(permisos, include_in_schema=False)

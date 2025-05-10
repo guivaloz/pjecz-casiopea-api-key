@@ -22,9 +22,9 @@ class UsuarioOficina(Base, UniversalMixin):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Clave foránea
-    oficina_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("oficinas.id"), index=True)
+    oficina_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("oficinas.id"))
     oficina: Mapped["Oficina"] = relationship(back_populates="usuarios_oficinas")
-    usuario_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("usuarios.id"), index=True)
+    usuario_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("usuarios.id"))
     usuario: Mapped["Usuario"] = relationship(back_populates="usuarios_oficinas")
 
     # Columnas

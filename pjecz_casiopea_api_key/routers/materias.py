@@ -49,4 +49,4 @@ async def paginado_materias(
     """Paginado de materias"""
     if current_user.permissions.get("MATERIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(database.query(Materia).filter_by(en_exh_exhortos=True).filter_by(estatus="A").order_by(Materia.nombre))
+    return paginate(database.query(Materia).filter_by(estatus="A").order_by(Materia.nombre))
