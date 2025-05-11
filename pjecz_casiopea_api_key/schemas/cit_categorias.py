@@ -2,8 +2,6 @@
 Cit Categorías, esquemas de pydantic
 """
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -12,7 +10,7 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitCategoriaOut(BaseModel):
     """Esquema para entregar categorías"""
 
-    id: uuid.UUID
+    clave: str
     nombre: str
     model_config = ConfigDict(from_attributes=True)
 

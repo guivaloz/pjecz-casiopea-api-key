@@ -3,7 +3,6 @@ Cit Servicios, esquemas de pydantic
 """
 
 from datetime import time
-import uuid
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,7 +12,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitServicioOut(BaseModel):
     """Esquema para entregar servicios"""
 
-    id: uuid.UUID
     cit_categoria_clave: str
     cit_categoria_nombre: str
     clave: str

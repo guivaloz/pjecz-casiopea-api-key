@@ -33,7 +33,7 @@ from .routers.usuarios_roles import usuarios_roles
 # FastAPI
 app = FastAPI(
     title="PJECZ Casiopea API Key",
-    description="API con autentificación para realizar operaciones con la base de datos del sistema de citas.",
+    description="API con autentificación del sistema de citas.",
     docs_url="/docs",
     redoc_url=None,
 )
@@ -61,7 +61,7 @@ app.include_router(cit_oficinas_servicios, tags=["citas"])
 app.include_router(cit_servicios, tags=["citas"])
 app.include_router(distritos, tags=["autoridades"])
 app.include_router(domicilios, tags=["oficinas"])
-app.include_router(materias, tags=["materias"])
+app.include_router(materias, tags=["autoridades"])
 app.include_router(modulos, include_in_schema=False)
 app.include_router(oficinas, tags=["oficinas"])
 app.include_router(permisos, include_in_schema=False)
@@ -78,4 +78,4 @@ add_pagination(app)
 @app.get("/")
 async def root():
     """Mensaje de Bienvenida"""
-    return {"message": "API con autentificación para realizar operaciones con la base de datos del sistema de citas."}
+    return {"message": "API con autentificación del sistema de citas."}

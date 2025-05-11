@@ -3,7 +3,6 @@ Cit Horas Bloqueadas v4, esquemas de pydantic
 """
 
 from datetime import date, time
-import uuid
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,7 +12,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitHoraBloqueadaOut(BaseModel):
     """Esquema para entregar horas bloqueadas"""
 
-    id: uuid.UUID
     oficina_clave: str
     oficina_descripcion: str
     oficina_descripcion_corta: str
