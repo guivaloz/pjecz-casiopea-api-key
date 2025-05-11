@@ -45,6 +45,7 @@ async def detalle_distrito(
 async def paginado_distritos(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
+    es_distrito_judicial: bool = None,
     es_distrito: bool = None,
     es_jurisdiccional: bool = None,
 ):
@@ -52,6 +53,8 @@ async def paginado_distritos(
     if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(Distrito)
+    if es_distrito_judicial is not None:
+        consulta = consulta.filter_by(es_distrito_judicial=es_distrito_judicial)
     if es_distrito is not None:
         consulta = consulta.filter_by(es_distrito=es_distrito)
     if es_jurisdiccional is not None:

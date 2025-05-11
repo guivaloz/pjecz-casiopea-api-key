@@ -2,8 +2,6 @@
 Modulos, esquemas de pydantic
 """
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -12,7 +10,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class ModuloOut(BaseModel):
     """Esquema para entregar modulos"""
 
-    id: uuid.UUID
     nombre: str
     nombre_corto: str
     icono: str

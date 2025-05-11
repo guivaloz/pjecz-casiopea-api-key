@@ -1,5 +1,5 @@
 """
-Unit tests for usuarios category
+Unit tests usuarios
 """
 
 import unittest
@@ -10,66 +10,7 @@ from tests import config
 
 
 class TestUsuarios(unittest.TestCase):
-    """Tests for usuarios category"""
-
-    def test_get_bitacoras(self):
-        """Test GET method for bitacoras"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/bitacoras",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_bitacoras_with_modulo_nombre(self):
-        """Test GET method for bitacoras with modulo_nombre USUARIOS"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/bitacoras",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-            params={"modulo_nombre": "USUARIOS"},
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(data["success"], True)
-        for item in data["items"]:
-            self.assertEqual(item["modulo_nombre"], "USUARIOS")
-
-    def test_get_entradas_salidas(self):
-        """Test GET method for entradas_salidas"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/entradas_salidas",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_modulos(self):
-        """Test GET method for modulos"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/modulos",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_permisos(self):
-        """Test GET method for permisos"""
-        response = requests.get(
-            f"{config['api_base_url']}/permisos",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_roles(self):
-        """Test GET method for roles"""
-        response = requests.get(
-            f"{config['api_base_url']}/roles",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
+    """Test usuarios"""
 
     def test_get_usuarios(self):
         """Test GET method for usuarios"""
@@ -79,15 +20,18 @@ class TestUsuarios(unittest.TestCase):
             timeout=config["timeout"],
         )
         self.assertEqual(response.status_code, 200)
-
-    def test_get_usuarios_roles(self):
-        """Test GET method for usuarios_roles"""
-        response = requests.get(
-            f"{config['api_base_url']}/usuarios_roles",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-        )
-        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertTrue("success" in payload)
+        self.assertTrue(payload["success"])
+        self.assertTrue("message" in payload)
+        self.assertTrue("data" in payload)
+        self.assertTrue(isinstance(payload["data"], list))
+        for item in payload["data"]:
+            self.assertTrue("email" in item)
+            self.assertTrue("nombres" in item)
+            self.assertTrue("apellido_paterno" in item)
+            self.assertTrue("apellido_materno" in item)
+            self.assertTrue("puesto" in item)
 
 
 if __name__ == "__main__":

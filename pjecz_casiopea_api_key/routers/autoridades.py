@@ -49,7 +49,6 @@ async def paginado_autoridades(
     database: Annotated[Session, Depends(get_db)],
     distrito_clave: str = None,
     es_jurisdiccional: bool = None,
-    es_notaria: bool = None,
     materia_clave: str = None,
 ):
     """Paginado de autoridades"""
@@ -64,8 +63,6 @@ async def paginado_autoridades(
         consulta = consulta.join(Distrito).filter(Distrito.clave == distrito_clave)
     if es_jurisdiccional is not None:
         consulta = consulta.filter(Autoridad.es_jurisdiccional == es_jurisdiccional)
-    if es_notaria is not None:
-        consulta = consulta.filter(Autoridad.es_notaria == es_notaria)
     if materia_clave is not None:
         try:
             materia_clave = safe_clave(materia_clave)

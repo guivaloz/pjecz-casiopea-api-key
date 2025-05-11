@@ -2,8 +2,6 @@
 Usuarios-Roles, esquemas de pydantic
 """
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -12,7 +10,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class UsuarioRolOut(BaseModel):
     """Esquema para entregar usuarios-roles"""
 
-    id: uuid.UUID
     rol_nombre: str
     usuario_email: str
     usuario_nombre: str

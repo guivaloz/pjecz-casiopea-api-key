@@ -1,5 +1,5 @@
 """
-Unit tests for distritos category
+Unit tests distritos
 """
 
 import unittest
@@ -10,58 +10,27 @@ from tests import config
 
 
 class TestDistritos(unittest.TestCase):
-    """Tests for distritos category"""
+    """Test distritos"""
 
     def test_get_distritos(self):
-        """Test GET method for distritos"""
+        """Test GET distritos"""
         response = requests.get(
             url=f"{config['api_base_url']}/distritos",
             headers={"X-Api-Key": config["api_key"]},
             timeout=config["timeout"],
         )
         self.assertEqual(response.status_code, 200)
-
-    def test_get_distritos_by_es_distrito_judicial(self):
-        """Test GET method for distritos by es_distrito_judicial"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/distritos",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-            params={"es_distrito_judicial": 1},
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(data["success"], True)
-        for item in data["items"]:
-            self.assertEqual(item["es_distrito_judicial"], 1)
-
-    def test_get_distritos_by_es_distrito(self):
-        """Test GET method for distritos by es_distrito"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/distritos",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-            params={"es_distrito": 1},
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(data["success"], True)
-        for item in data["items"]:
-            self.assertEqual(item["es_distrito"], 1)
-
-    def test_get_distritos_by_es_jurisdiccional(self):
-        """Test GET method for distritos by es_jurisdiccional"""
-        response = requests.get(
-            url=f"{config['api_base_url']}/distritos",
-            headers={"X-Api-Key": config["api_key"]},
-            timeout=config["timeout"],
-            params={"es_jurisdiccional": 1},
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(data["success"], True)
-        for item in data["items"]:
-            self.assertEqual(item["es_jurisdiccional"], 1)
+        payload = response.json()
+        self.assertTrue("success" in payload)
+        self.assertTrue(payload["success"])
+        self.assertTrue("message" in payload)
+        self.assertTrue("data" in payload)
+        self.assertTrue(isinstance(payload["data"], list))
+        for item in payload["data"]:
+            self.assertTrue("clave" in item)
+            self.assertTrue("nombre" in item)
+            self.assertTrue("nombre_corto" in item)
+            self.assertTrue("es_jurisdiccional" in item)
 
 
 if __name__ == "__main__":

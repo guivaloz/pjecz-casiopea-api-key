@@ -2,8 +2,6 @@
 Autoridades, esquemas de pydantic
 """
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict
 
 from ..dependencies.schemas_base import OneBaseOut
@@ -12,7 +10,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class AutoridadOut(BaseModel):
     """Esquema para entregar autoridades"""
 
-    id: uuid.UUID
     distrito_clave: str
     distrito_nombre: str
     distrito_nombre_corto: str

@@ -13,9 +13,10 @@ from ..dependencies.schemas_base import OneBaseOut
 class UsuarioOut(BaseModel):
     """Esquema para entregar usuarios"""
 
-    id: uuid.UUID
     distrito_clave: str
+    distrito_nombre: str
     autoridad_clave: str
+    autoridad_descripcion: str
     email: str
     nombres: str
     apellido_paterno: str
@@ -33,6 +34,7 @@ class OneUsuarioOut(OneBaseOut):
 class UsuarioInDB(UsuarioOut):
     """Usuario en base de datos"""
 
+    id: uuid.UUID
     username: str
     permissions: dict
     hashed_password: str
