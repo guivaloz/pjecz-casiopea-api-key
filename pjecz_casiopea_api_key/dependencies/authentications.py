@@ -36,10 +36,12 @@ def get_user(
         return None
     return UsuarioInDB(
         id=usuario.id,
-        distrito_clave=usuario.distrito_clave,
-        distrito_nombre=usuario.distrito_nombre,
         autoridad_clave=usuario.autoridad_clave,
         autoridad_descripcion=usuario.autoridad_descripcion,
+        autoridad_descripcion_corta=usuario.autoridad_descripcion_corta,
+        distrito_clave=usuario.distrito_clave,
+        distrito_nombre=usuario.distrito_nombre,
+        distrito_nombre_corto=usuario.distrito_nombre_corto,
         email=usuario.email,
         nombres=usuario.nombres,
         apellido_paterno=usuario.apellido_paterno,

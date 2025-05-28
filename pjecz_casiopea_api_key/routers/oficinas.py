@@ -12,7 +12,7 @@ from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
 from ..dependencies.safe_string import safe_clave
-from ..models.distritos import Distrito
+from ..models.domicilios import Domicilio
 from ..models.oficinas import Oficina
 from ..models.permisos import Permiso
 from ..schemas.oficinas import OficinaOut, OneOficinaOut
@@ -46,22 +46,15 @@ async def detalle_oficina(
 async def paginado_oficinas(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    distrito_clave: str = None,
-    domicilio_id: str = None,
-    es_jurisdiccional: bool = None,
+    domicilio_clave: str = None,
 ):
     """Paginado de oficinas que pueden agendar citas"""
     if current_user.permissions.get("OFICINAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(Oficina)
-    if distrito_clave is not None:
-        try:
-            clave = safe_clave(distrito_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
-        consulta = consulta.join(Distrito).filter(Distrito.clave == clave)
-    if domicilio_id is not None:
-        consulta = consulta.filter(Oficina.domicilio_id == domicilio_id)
-    if es_jurisdiccional is not None:
-        consulta = consulta.filter(Oficina.es_jurisdiccional == es_jurisdiccional)
+    if domicilio_clave is not None:
+        domicilio_clave = safe_clave(domicilio_clave)
+        if domicilio_clave != "":
+            consulta = consulta.join(Domicilio).filter(Domicilio.clave == domicilio_clave)
+    consulta = consulta.filter(Oficina.puede_agendar_citas == True)
     return paginate(consulta.filter(Oficina.estatus == "A").order_by(Oficina.clave))

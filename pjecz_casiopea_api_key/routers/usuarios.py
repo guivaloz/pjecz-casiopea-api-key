@@ -14,7 +14,6 @@ from ..dependencies.exceptions import MyNotValidParamError
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
 from ..dependencies.safe_string import safe_clave, safe_email, safe_string
 from ..models.autoridades import Autoridad
-from ..models.oficinas import Oficina
 from ..models.usuarios import Usuario
 from ..models.permisos import Permiso
 from ..schemas.usuarios import UsuarioOut, OneUsuarioOut
@@ -54,7 +53,6 @@ async def paginado_usuarios(
     autoridad_clave: str = None,
     email: str = None,
     nombres: str = None,
-    oficina_clave: str = None,
 ):
     """Paginado de usuarios"""
     if current_user.permissions.get("USUARIOS", 0) < Permiso.VER:
@@ -84,10 +82,4 @@ async def paginado_usuarios(
         nombres = safe_string(nombres)
         if nombres != "":
             consulta = consulta.filter(Usuario.nombres.contains(nombres))
-    if oficina_clave is not None:
-        try:
-            oficina_clave = safe_clave(oficina_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
-        consulta = consulta.join(Oficina).filter(Oficina.clave == oficina_clave)
     return paginate(consulta.filter(Usuario.estatus == "A").order_by(Usuario.email))

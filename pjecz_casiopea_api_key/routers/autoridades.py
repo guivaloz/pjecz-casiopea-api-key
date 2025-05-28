@@ -48,7 +48,6 @@ async def paginado_autoridades(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     distrito_clave: str = None,
-    es_jurisdiccional: bool = None,
     materia_clave: str = None,
 ):
     """Paginado de autoridades"""
@@ -61,8 +60,6 @@ async def paginado_autoridades(
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave del distrito")
         consulta = consulta.join(Distrito).filter(Distrito.clave == distrito_clave)
-    if es_jurisdiccional is not None:
-        consulta = consulta.filter(Autoridad.es_jurisdiccional == es_jurisdiccional)
     if materia_clave is not None:
         try:
             materia_clave = safe_clave(materia_clave)

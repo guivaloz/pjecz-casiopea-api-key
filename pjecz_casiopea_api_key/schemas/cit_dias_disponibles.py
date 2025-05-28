@@ -6,16 +6,10 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from ..dependencies.schemas_base import OneBaseOut
 
+class ListCitDiaDisponibleOut(BaseModel):
+    """Esquema para entregar el listado de días disponibles"""
 
-class CitDiaDisponibleOut(BaseModel):
-    """Esquema para entregar dias disponibles"""
-
-    fecha: date
-
-
-class OneCitDiaDisponibleOut(OneBaseOut):
-    """Esquema para entregar un dia disponible"""
-
-    data: CitDiaDisponibleOut | None = None
+    success: bool
+    message: str
+    data: list[date] | None = None

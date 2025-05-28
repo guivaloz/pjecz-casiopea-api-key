@@ -34,7 +34,7 @@ async def detalle_cit_categorias(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         cit_categoria = database.query(CitCategoria).filter_by(clave=clave).one()
-    except (MultipleResultsFound, NoResultFound) as error:
+    except (MultipleResultsFound, NoResultFound):
         return OneCitCategoriaOut(success=False, message="No existe esa categoria")
     if cit_categoria.estatus != "A":
         return OneCitCategoriaOut(success=False, message="No está habilitada esa categoría")
