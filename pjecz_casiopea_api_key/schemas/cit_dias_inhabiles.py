@@ -9,17 +9,11 @@ from pydantic import BaseModel, ConfigDict
 from ..dependencies.schemas_base import OneBaseOut
 
 
-class CitDiaInhabilIn(BaseModel):
-    """Esquema para recibir un día inhábil"""
+class CitDiaInhabilOut(BaseModel):
+    """Esquema para entregar dias inhábiles"""
 
     fecha: date
     descripcion: str
-
-
-class CitDiaInhabilOut(CitDiaInhabilIn):
-    """Esquema para entregar dias inhábiles"""
-
-    id: str
     model_config = ConfigDict(from_attributes=True)
 
 

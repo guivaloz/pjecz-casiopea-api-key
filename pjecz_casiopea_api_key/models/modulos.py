@@ -30,7 +30,6 @@ class Modulo(Base, UniversalMixin):
     en_navegacion: Mapped[bool] = mapped_column(default=True)
 
     # Hijos
-    bitacoras: Mapped[List["Bitacora"]] = relationship("Bitacora", back_populates="modulo")
     permisos: Mapped[List["Permiso"]] = relationship("Permiso", back_populates="modulo")
 
     def __repr__(self):

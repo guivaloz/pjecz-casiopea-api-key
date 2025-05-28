@@ -24,7 +24,7 @@ cit_clientes_recuperaciones = APIRouter(prefix="/api/v5/cit_clientes_recuperacio
 async def detalle_cit_clientes_recuperaciones(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    cit_cliente_recuperacion_id: int,
+    cit_cliente_recuperacion_id: str,
 ):
     """Detalle de una recuperación a partir de su ID"""
     if current_user.permissions.get("CIT CLIENTES RECUPERACIONES", 0) < Permiso.VER:

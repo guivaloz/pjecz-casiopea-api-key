@@ -10,7 +10,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class ModuloOut(BaseModel):
     """Esquema para entregar modulos"""
 
-    id: str
     nombre: str
     nombre_corto: str
     icono: str

@@ -12,7 +12,6 @@ from ..dependencies.schemas_base import OneBaseOut
 class CitClienteOut(BaseModel):
     """Esquema para entregar clientes"""
 
-    id: str
     nombres: str
     apellido_primero: str
     apellido_segundo: str
@@ -20,9 +19,6 @@ class CitClienteOut(BaseModel):
     curp: str
     telefono: str
     email: str
-    contrasena_md5: str
-    contrasena_sha256: str
-    renovacion: date
     limite_citas_pendientes: int
     autoriza_mensajes: bool
     enviar_boletin: bool

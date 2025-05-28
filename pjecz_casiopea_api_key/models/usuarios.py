@@ -25,24 +25,20 @@ class Usuario(Base, UniversalMixin):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
-    autoridad_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("autoridades.id"), index=True)
-    autoridad: Mapped["Autoridad"] = relationship("Autoridad", back_populates="usuarios")
+    autoridad_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("autoridades.id"))
+    autoridad: Mapped["Autoridad"] = relationship(back_populates="usuarios")
 
     # Columnas
-    email: Mapped[str] = mapped_column(String(256), unique=True, index=True)
+    email: Mapped[str] = mapped_column(String(256), unique=True)
     nombres: Mapped[str] = mapped_column(String(256))
     apellido_paterno: Mapped[str] = mapped_column(String(256))
     apellido_materno: Mapped[str] = mapped_column(String(256))
-    curp: Mapped[str] = mapped_column(String(18))
     puesto: Mapped[str] = mapped_column(String(256))
-    telefono_celular: Mapped[Optional[str]] = mapped_column(String(256))
     api_key: Mapped[Optional[str]] = mapped_column(String(128))
     api_key_expiracion: Mapped[Optional[datetime]]
     contrasena: Mapped[Optional[str]] = mapped_column(String(256))
 
     # Hijos
-    bitacoras: Mapped[List["Bitacora"]] = relationship("Bitacora", back_populates="usuario")
-    entradas_salidas: Mapped[List["EntradaSalida"]] = relationship("EntradaSalida", back_populates="usuario")
     usuarios_roles: Mapped[List["UsuarioRol"]] = relationship("UsuarioRol", back_populates="usuario")
     usuarios_oficinas: Mapped[List["UsuarioOficina"]] = relationship("UsuarioOficina", back_populates="usuario")
 
@@ -53,11 +49,6 @@ class Usuario(Base, UniversalMixin):
     def nombre(self):
         """Junta nombres, apellido_paterno y apellido materno"""
         return self.nombres + " " + self.apellido_paterno + " " + self.apellido_materno
-
-    @property
-    def distrito_id(self):
-        """Distrito ID"""
-        return self.autoridad.distrito_id
 
     @property
     def distrito_clave(self):
@@ -88,11 +79,6 @@ class Usuario(Base, UniversalMixin):
     def autoridad_descripcion_corta(self):
         """Autoridad descripción corta"""
         return self.autoridad.descripcion_corta
-
-    @property
-    def oficina_clave(self):
-        """Oficina clave"""
-        return self.oficina.clave
 
     @property
     def permissions(self):

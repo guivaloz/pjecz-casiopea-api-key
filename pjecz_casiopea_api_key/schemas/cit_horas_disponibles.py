@@ -7,7 +7,9 @@ from datetime import time
 from pydantic import BaseModel
 
 
-class CitHoraDisponibleOut(BaseModel):
-    """Esquema para entregar horas disponibles"""
+class ListCitHoraDisponibleOut(BaseModel):
+    """Esquema para entregar el listado de horas disponibles"""
 
-    horas_minutos: time
+    success: bool
+    message: str
+    data: list[time] | None = None

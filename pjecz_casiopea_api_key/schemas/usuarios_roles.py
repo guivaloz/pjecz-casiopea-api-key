@@ -10,10 +10,8 @@ from ..dependencies.schemas_base import OneBaseOut
 class UsuarioRolOut(BaseModel):
     """Esquema para entregar usuarios-roles"""
 
-    id: str
-    rol_id: str
     rol_nombre: str
-    usuario_id: str
+    usuario_email: str
     usuario_nombre: str
     descripcion: str
     model_config = ConfigDict(from_attributes=True)
