@@ -21,7 +21,7 @@ cit_oficinas_servicios = APIRouter(prefix="/api/v5/cit_oficinas_servicios")
 
 
 @cit_oficinas_servicios.get("/{cit_oficina_servicio_id}", response_model=OneCitOficinaServicioOut)
-async def detalle_cit_oficinas_servicios(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     cit_oficina_servicio_id: str,
@@ -46,7 +46,7 @@ async def detalle_cit_oficinas_servicios(
 
 
 @cit_oficinas_servicios.get("", response_model=CustomPage[CitOficinaServicioOut])
-async def paginado_cit_oficinas_servicios(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     cit_servicio_clave: str = None,

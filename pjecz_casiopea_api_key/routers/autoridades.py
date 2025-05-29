@@ -22,7 +22,7 @@ autoridades = APIRouter(prefix="/api/v5/autoridades")
 
 
 @autoridades.get("/{clave}", response_model=OneAutoridadOut)
-async def detalle_autoridad(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     clave: str,
@@ -44,7 +44,7 @@ async def detalle_autoridad(
 
 
 @autoridades.get("", response_model=CustomPage[AutoridadOut])
-async def paginado_autoridades(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     distrito_clave: str = None,

@@ -32,3 +32,14 @@ class OneCitClienteRegistroOut(OneBaseOut):
     """Esquema para entregar un registro de cliente"""
 
     data: CitClienteRegistroOut | None = None
+
+
+class CrearCitClienteRegistroIn(BaseModel):
+    """Esquema para recibir el registro de un cliente"""
+
+    nombres: str
+    apellido_primero: str
+    apellido_segundo: str | None = None
+    curp: str
+    telefono: str
+    email: str

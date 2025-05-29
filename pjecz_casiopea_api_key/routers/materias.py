@@ -20,7 +20,7 @@ materias = APIRouter(prefix="/api/v5/materias")
 
 
 @materias.get("/{clave}", response_model=OneMateriaOut)
-async def detalle_materia(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     clave: str,
@@ -42,7 +42,7 @@ async def detalle_materia(
 
 
 @materias.get("", response_model=CustomPage[MateriaOut])
-async def paginado_materias(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
 ):

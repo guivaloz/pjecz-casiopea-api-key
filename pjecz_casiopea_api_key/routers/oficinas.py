@@ -21,7 +21,7 @@ oficinas = APIRouter(prefix="/api/v5/oficinas")
 
 
 @oficinas.get("/{clave}", response_model=OneOficinaOut)
-async def detalle_oficina(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     clave: str,
@@ -43,7 +43,7 @@ async def detalle_oficina(
 
 
 @oficinas.get("", response_model=CustomPage[OficinaOut])
-async def paginado_oficinas(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     domicilio_clave: str = None,

@@ -21,7 +21,7 @@ cit_horas_bloqueadas = APIRouter(prefix="/api/v5/cit_horas_bloqueadas")
 
 
 @cit_horas_bloqueadas.get("/{cit_hora_bloqueada_id}", response_model=OneCitHoraBloqueadaOut)
-async def detalle_cit_horas_bloqueadas(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     cit_hora_bloqueada_id: str,
@@ -46,7 +46,7 @@ async def detalle_cit_horas_bloqueadas(
 
 
 @cit_horas_bloqueadas.get("", response_model=CustomPage[CitHoraBloqueadaOut])
-async def paginado_cit_horas_bloqueadas(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     fecha: date,

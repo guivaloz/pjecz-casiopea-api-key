@@ -20,7 +20,7 @@ cit_categorias = APIRouter(prefix="/api/v5/cit_categorias")
 
 
 @cit_categorias.get("/{clave}", response_model=OneCitCategoriaOut)
-async def detalle_cit_categorias(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     clave: str,
@@ -42,7 +42,7 @@ async def detalle_cit_categorias(
 
 
 @cit_categorias.get("", response_model=CustomPage[CitCategoriaOut])
-async def paginado_cit_categorias(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
 ):
