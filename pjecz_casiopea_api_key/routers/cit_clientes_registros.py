@@ -2,7 +2,7 @@
 Cit Clientes Registros, routers
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -11,16 +11,103 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_email, safe_string, safe_telefono, safe_uuid
+from ..dependencies.pwgen import generar_cadena_para_validar
+from ..dependencies.safe_string import safe_curp, safe_email, safe_string, safe_telefono, safe_uuid
+from ..models.cit_clientes import CitCliente
 from ..models.cit_clientes_registros import CitClienteRegistro
 from ..models.permisos import Permiso
-from ..schemas.cit_clientes_registros import CitClienteRegistroOut, OneCitClienteRegistroOut
+from ..schemas.cit_clientes_registros import CitClienteRegistroOut, OneCitClienteRegistroOut, CrearCitClienteRegistroIn
+
+EXPIRACION_HORAS = 48
 
 cit_clientes_registros = APIRouter(prefix="/api/v5/cit_clientes_registros")
 
 
+@cit_clientes_registros.post("/solicitar", response_model=OneCitClienteRegistroOut)
+async def solicitar(
+    current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
+    database: Annotated[Session, Depends(get_db)],
+    crear_cit_cliente_registro_in: CrearCitClienteRegistroIn,
+):
+    """Solicitar el registro de un cliente, se va a enviar un mensaje a su e-mail para validar que existe"""
+    if current_user.permissions.get("CIT CLIENTES REGISTROS", 0) < Permiso.CREAR:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+
+    # Validar nombres
+    nombres = safe_string(crear_cit_cliente_registro_in.nombres, save_enie=True)
+    if nombres == "":
+        return OneCitClienteRegistroOut(success=False, message="No son válidos los nombres")
+
+    # Validar apellido_primero
+    apellido_primero = safe_string(crear_cit_cliente_registro_in.apellido_primero, save_enie=True)
+    if apellido_primero == "":
+        return OneCitClienteRegistroOut(success=False, message="No es válido el primer apellido")
+
+    # Se puede omitir apellido_segundo
+    apellido_segundo = safe_string(crear_cit_cliente_registro_in.apellido_segundo, save_enie=True)
+
+    # Validar CURP
+    try:
+        curp = safe_curp(crear_cit_cliente_registro_in.curp)
+    except ValueError:
+        return OneCitClienteRegistroOut(success=False, message="No es válido el CURP")
+
+    # Validar telefono
+    telefono = safe_telefono(crear_cit_cliente_registro_in.telefono)
+    if telefono == "":
+        return OneCitClienteRegistroOut(success=False, message="No es válido el teléfono")
+
+    # Validar email
+    try:
+        email = safe_email(crear_cit_cliente_registro_in.email)
+    except ValueError:
+        return OneCitClienteRegistroOut(success=False, message="No es válido el email")
+
+    # Verificar que no exista un cliente con ese CURP
+    if database.query(CitCliente).filter_by(curp=curp).first() is not None:
+        return OneCitClienteRegistroOut(success=False, message="No puede registrarse porque ya existe una cuenta con ese CURP")
+
+    # Verificar que no exista un cliente con ese correo electrónico
+    if database.query(CitCliente).filter_by(email=email).first() is not None:
+        return OneCitClienteRegistroOut(success=False, message="No puede registrarse porque ya existe una cuenta con ese email")
+
+    # Verificar que no haya un registro pendiente con ese CURP
+    if (
+        database.query(CitClienteRegistro).filter_by(curp=curp).filter_by(ya_registrado=False).filter_by(estatus="A").first()
+        is not None
+    ):
+        return OneCitClienteRegistroOut(success=False, message="Ya hay una solicitud de registro para ese CURP")
+
+    # Verificar que no haya un registro pendiente con ese correo electrónico
+    if (
+        database.query(CitClienteRegistro).filter_by(email=email).filter_by(ya_registrado=False).filter_by(estatus="A").first()
+        is not None
+    ):
+        return OneCitClienteRegistroOut(success=False, message="Ya hay una solicitud de registro para ese correo electrónico")
+
+    # Insertar
+    cit_cliente_registro = CitClienteRegistro(
+        nombres=nombres,
+        apellido_primero=apellido_primero,
+        apellido_segundo=apellido_segundo,
+        curp=curp,
+        telefono=telefono,
+        email=email,
+        expiracion=datetime.now() + timedelta(hours=EXPIRACION_HORAS),
+        cadena_validar=generar_cadena_para_validar(),
+    )
+    database.add(cit_cliente_registro)
+    database.commit()
+    database.refresh(cit_cliente_registro)
+
+    # TODO: Agregar tarea en el fondo para que se envie un mensaje via correo electrónico
+
+    # Entregar
+    return OneCitClienteRegistroOut.model_validate(cit_cliente_registro)
+
+
 @cit_clientes_registros.get("/{cit_cliente_registro_id}", response_model=OneCitClienteRegistroOut)
-async def detalle_cit_clientes_registros(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     cit_cliente_registro_id: str,
@@ -45,7 +132,7 @@ async def detalle_cit_clientes_registros(
 
 
 @cit_clientes_registros.get("", response_model=CustomPage[CitClienteRegistroOut])
-async def paginado_cit_clientes_registros(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     apellido_primero: str = None,

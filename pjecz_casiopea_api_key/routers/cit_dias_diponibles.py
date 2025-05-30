@@ -1,3 +1,0 @@
-"""
-Cit Días Disponibles, routers
-"""

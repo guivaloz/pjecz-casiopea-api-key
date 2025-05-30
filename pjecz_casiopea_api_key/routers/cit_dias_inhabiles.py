@@ -12,7 +12,6 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_clave
 from ..models.cit_dias_inhabiles import CitDiaInhabil
 from ..models.permisos import Permiso
 from ..schemas.cit_dias_inhabiles import CitDiaInhabilOut, OneCitDiaInhabilOut
@@ -21,7 +20,7 @@ cit_dias_inhabiles = APIRouter(prefix="/api/v5/cit_dias_inhabiles")
 
 
 @cit_dias_inhabiles.get("/{fecha}", response_model=OneCitDiaInhabilOut)
-async def detalle_cit_dias_inhabiles(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     fecha: date,
@@ -43,7 +42,7 @@ async def detalle_cit_dias_inhabiles(
 
 
 @cit_dias_inhabiles.get("", response_model=CustomPage[CitDiaInhabilOut])
-async def paginado_cit_dias_inhabiles(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     desde: date = None,

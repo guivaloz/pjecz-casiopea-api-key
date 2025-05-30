@@ -20,7 +20,7 @@ cit_clientes = APIRouter(prefix="/api/v5/cit_clientes")
 
 
 @cit_clientes.get("/{email}", response_model=OneCitClienteOut)
-async def detalle_cit_clientes(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     email: str,
@@ -42,7 +42,7 @@ async def detalle_cit_clientes(
 
 
 @cit_clientes.get("", response_model=CustomPage[CitClienteOut])
-async def paginado_cit_clientes(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     apellido_primero: str = None,

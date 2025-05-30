@@ -22,7 +22,7 @@ usuarios = APIRouter(prefix="/api/v5/usuarios")
 
 
 @usuarios.get("/{email}", response_model=OneUsuarioOut)
-async def detalle_usuario(
+async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     email: str,
@@ -45,7 +45,7 @@ async def detalle_usuario(
 
 
 @usuarios.get("", response_model=CustomPage[UsuarioOut])
-async def paginado_usuarios(
+async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
     apellido_paterno: str = None,

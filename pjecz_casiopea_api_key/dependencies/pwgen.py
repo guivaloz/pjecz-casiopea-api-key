@@ -4,21 +4,9 @@ Generadores de contraseñas
 
 import random
 import string
-import time
 
 
-def generar_contrasena(largo=16):
-    """Generar contraseña con minúsculas, mayúsculas, dígitos y signos"""
-    minusculas = string.ascii_lowercase
-    mayusculas = string.ascii_uppercase
-    digitos = string.digits
-    simbolos = string.punctuation
-    todos = minusculas + mayusculas + digitos + simbolos
-    temp = random.sample(todos, largo)
-    return "".join(temp)
-
-
-def generar_aleatorio(largo=16):
+def generar_cadena_para_validar(largo: int = 24) -> str:
     """Generar cadena de texto aleatorio con minúsculas, mayúsculas y dígitos"""
     minusculas = string.ascii_lowercase
     mayusculas = string.ascii_uppercase
@@ -28,8 +16,13 @@ def generar_aleatorio(largo=16):
     return "".join(temp)
 
 
-def generar_identificador(largo: int = 16) -> str:
-    """Generar identificador con el tiempo actual y algo aleatorio con letras en mayúsculas y dígitos"""
-    timestamp_unique = str(int(time.time() * 1000))
-    random_characters = "".join(random.sample(string.ascii_uppercase + string.digits, k=largo))
-    return f"{timestamp_unique}{random_characters}"[:largo]
+def generar_codigo_asistencia(largo: int = 4) -> str:
+    """Generar código asistencia"""
+    digitos = string.digits
+    temp = random.sample(digitos, largo)
+    return "".join(temp)
+
+
+def generar_password(largo: int = 16) -> str:
+    """Generar password"""
+    return generar_cadena_para_validar(largo)
