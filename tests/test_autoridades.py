@@ -34,7 +34,7 @@ class TestAutoridades(unittest.TestCase):
 
 
     def test_get_autoridad_om_di(self):
-        """Test GET autoridad OM-DI"""
+        """Test GET autoridad clave OM-DI"""
         clave = "OM-DI"
         response = requests.get(
             url=f"{config['api_base_url']}/autoridades/{clave}",

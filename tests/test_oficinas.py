@@ -13,7 +13,7 @@ class TestOficinas(unittest.TestCase):
     """Test oficinas"""
 
     def test_get_oficinas(self):
-        """Test GET method for oficinas"""
+        """Test GET oficinas"""
         response = requests.get(
             url=f"{config['api_base_url']}/oficinas",
             headers={"X-Api-Key": config["api_key"]},
@@ -27,13 +27,44 @@ class TestOficinas(unittest.TestCase):
         self.assertTrue("data" in payload)
         self.assertTrue(isinstance(payload["data"], list))
         for item in payload["data"]:
-            self.assertTrue("domicilio_edificio" in item)
             self.assertTrue("clave" in item)
             self.assertTrue("descripcion" in item)
             self.assertTrue("descripcion_corta" in item)
+            self.assertTrue("domicilio_clave" in item)
+            self.assertTrue("domicilio_completo" in item)
+            self.assertTrue("domicilio_edificio" in item)
+            self.assertTrue("es_jurisdiccional" in item)
+
+
+    def test_get_oficinas_from_cjs(self):
+        """Test GET oficinas from domicilio_clave CJS"""
+        domicilio_clave = "CJS"
+        response = requests.get(
+            url=f"{config['api_base_url']}/oficinas",
+            headers={"X-Api-Key": config["api_key"]},
+            params={"domicilio_clave": domicilio_clave},
+            timeout=config["timeout"],
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertTrue("success" in payload)
+        self.assertTrue(payload["success"])
+        self.assertTrue("message" in payload)
+        self.assertTrue("data" in payload)
+        self.assertTrue(isinstance(payload["data"], list))
+        for item in payload["data"]:
+            self.assertTrue("clave" in item)
+            self.assertTrue("descripcion" in item)
+            self.assertTrue("descripcion_corta" in item)
+            self.assertTrue("domicilio_clave" in item)
+            self.assertTrue("domicilio_completo" in item)
+            self.assertTrue("domicilio_edificio" in item)
+            self.assertTrue("es_jurisdiccional" in item)
+            self.assertEqual(item["domicilio_clave"], domicilio_clave)
+
 
     def test_get_oficina_cjs_cemasc(self):
-        """Test GET for oficina CJS-CEMASC"""
+        """Test GET oficina clave CJS-CEMASC"""
         clave = "CJS-CEMASC"
         response = requests.get(
             url=f"{config['api_base_url']}/oficinas/{clave}",

@@ -58,7 +58,6 @@ async def cancelar(
 
     # Actualizar
     cit_cita.estado = "CANCELO"
-    cit_cita.puede_cancelarse = False
     database.add(cit_cita)
     database.commit()
 

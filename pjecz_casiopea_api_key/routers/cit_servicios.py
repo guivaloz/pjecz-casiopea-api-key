@@ -37,8 +37,10 @@ async def detalle(
         cit_servicio = database.query(CitServicio).filter_by(clave=clave).one()
     except (MultipleResultsFound, NoResultFound):
         return OneCitServicioOut(success=False, message="No existe ese servicio")
+    if cit_servicio.es_activo is False:
+        return OneCitServicioOut(success=False, message="No está activo ese servicio")
     if cit_servicio.estatus != "A":
-        return OneCitServicioOut(success=False, message="No está habilitado ese servicio")
+        return OneCitServicioOut(success=False, message="Este servicio está eliminado")
     return OneCitServicioOut(success=True, message=f"Detalle de {clave}", data=CitServicioOut.model_validate(cit_servicio))
 
 
@@ -58,4 +60,4 @@ async def paginado(
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la categoria")
         consulta = consulta.join(CitCategoria).filter(CitCategoria.clave == cit_categoria_clave)
-    return paginate(consulta.filter(CitServicio.estatus == "A").order_by(CitServicio.clave))
+    return paginate(consulta.filter(CitServicio.es_activo == True).filter(CitServicio.estatus == "A").order_by(CitServicio.clave))

@@ -13,7 +13,7 @@ class TestCitCitas(unittest.TestCase):
     """Test cit citas"""
 
     def test_get_cit_citas(self):
-        """Test GET cit citas"""
+        """Test GET citas"""
         response = requests.get(
             url=f"{config['api_base_url']}/cit_citas",
             headers={"X-Api-Key": config["api_key"]},

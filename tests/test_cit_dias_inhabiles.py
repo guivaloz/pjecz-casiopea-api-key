@@ -13,7 +13,7 @@ class TestCitDiasInhabiles(unittest.TestCase):
     """Test cit dias inhábiles"""
 
     def test_get_cit_dias_inhabiles(self):
-        """Test GET cit dias inhábiles"""
+        """Test GET dias inhábiles"""
         response = requests.get(
             url=f"{config['api_base_url']}/cit_dias_inhabiles",
             headers={"X-Api-Key": config["api_key"]},

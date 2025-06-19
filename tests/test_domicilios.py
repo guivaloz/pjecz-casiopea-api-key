@@ -33,7 +33,7 @@ class TestDomicilios(unittest.TestCase):
             self.assertTrue("calle" in item)
 
     def test_get_domicilio_cjs(self):
-        """Test GET domicilio CJS"""
+        """Test GET domicilio clave CJS"""
         clave = "CJS"
         response = requests.get(
             url=f"{config['api_base_url']}/domicilios/{clave}",

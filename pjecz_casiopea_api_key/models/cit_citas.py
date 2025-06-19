@@ -4,6 +4,7 @@ Cit Citas, modelos
 
 from datetime import datetime
 import uuid
+from typing import Optional
 
 import pytz
 from sqlalchemy import Enum, ForeignKey, String, Text
@@ -46,6 +47,7 @@ class CitCita(Base, UniversalMixin):
     asistencia: Mapped[bool] = mapped_column(default=False)
     codigo_asistencia: Mapped[str] = mapped_column(String(4))
     cancelar_antes: Mapped[datetime]
+    codigo_acceso: Mapped[Optional[str]] = mapped_column(Text())
 
     @property
     def cit_cliente_nombre(self):

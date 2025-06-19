@@ -13,7 +13,7 @@ class TestUsuarios(unittest.TestCase):
     """Test usuarios"""
 
     def test_get_usuarios(self):
-        """Test GET method for usuarios"""
+        """Test GET usuarios"""
         response = requests.get(
             f"{config['api_base_url']}/usuarios",
             headers={"X-Api-Key": config["api_key"]},
@@ -34,7 +34,7 @@ class TestUsuarios(unittest.TestCase):
             self.assertTrue("puesto" in item)
 
     def test_get_usuario_no_definido(self):
-        """Test GET usuario no definido"""
+        """Test GET usuario email no.definido@pjecz.gob.mx"""
         email = "no.definido@pjecz.gob.mx"
         response = requests.get(
             url=f"{config['api_base_url']}/usuarios/{email}",
