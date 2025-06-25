@@ -8,7 +8,7 @@ from typing import Optional
 
 import pytz
 from sqlalchemy import Enum, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import BYTEA, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..dependencies.database import Base
@@ -42,12 +42,13 @@ class CitCita(Base, UniversalMixin):
     # Columnas
     inicio: Mapped[datetime]
     termino: Mapped[datetime]
-    notas: Mapped[str] = mapped_column(Text())
+    notas: Mapped[Optional[str]] = mapped_column(Text)
     estado: Mapped[str] = mapped_column(Enum(*ESTADOS, name="estados", native_enum=False), index=True)
-    asistencia: Mapped[bool] = mapped_column(default=False)
-    codigo_asistencia: Mapped[str] = mapped_column(String(4))
     cancelar_antes: Mapped[datetime]
-    codigo_acceso: Mapped[Optional[str]] = mapped_column(Text())
+    asistencia: Mapped[bool] = mapped_column(default=False)
+    codigo_asistencia: Mapped[str] = mapped_column(String(6), default="000000")
+    codigo_acceso_id: Mapped[Optional[int]]
+    codigo_acceso_imagen: Mapped[Optional[bytes]] = mapped_column(BYTEA)
 
     @property
     def cit_cliente_nombre(self):
