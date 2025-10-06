@@ -9,12 +9,20 @@ import google.auth
 from google.cloud import secretmanager
 from pydantic_settings import BaseSettings
 
-# PROJECT_ID = os.getenv("PROJECT_ID", "")  # Por defecto está vacío, esto significa estamos en modo local
+PROJECT_ID = os.getenv("PROJECT_ID", "")  # Por defecto está vacío, esto significa estamos en modo local
 SERVICE_PREFIX = os.getenv("SERVICE_PREFIX", "pjecz_casiopea_flask")
 
 
 def get_secret(secret_id: str, default: str = "") -> str:
     """Get secret from Google Cloud Secret Manager"""
+
+    # Si PROJECT_ID está vacío estamos en modo de desarrollo y debe usar las variables de entorno
+    if PROJECT_ID == "":
+        # Entregar el valor de la variable de entorno, si no esta definida, se entrega el valor por defecto
+        value = os.getenv(secret_id.upper(), "")
+        if value == "":
+            return default
+        return value
 
     # Obtener el project_id con la librería de Google Auth
     _, project_id = google.auth.default()
@@ -60,8 +68,6 @@ class Settings(BaseSettings):
     FERNET_KEY: str = get_secret("FERNET_KEY")
     ORIGINS: str = get_secret("ORIGINS")
     SALT: str = get_secret("SALT")
-    SENDGRID_API_KEY: str = get_secret("SENDGRID_API_KEY")
-    SENDGRID_FROM_EMAIL: str = get_secret("SENDGRID_FROM_EMAIL")
     TZ: str = get_secret("TZ")
 
     class Config:

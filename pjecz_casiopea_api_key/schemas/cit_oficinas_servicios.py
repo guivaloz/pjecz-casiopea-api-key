@@ -4,8 +4,6 @@ Cit Oficinas Servicios, esquemas de pydantic
 
 from pydantic import BaseModel, ConfigDict
 
-from ..dependencies.schemas_base import OneBaseOut
-
 
 class CitOficinaServicioOut(BaseModel):
     """Esquema para entregar oficinas-servicios"""
@@ -18,7 +16,9 @@ class CitOficinaServicioOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OneCitOficinaServicioOut(OneBaseOut):
+class OneCitOficinaServicioOut(BaseModel):
     """Esquema para entregar un oficina-servicio"""
 
+    success: bool
+    message: str
     data: CitOficinaServicioOut | None = None
