@@ -2,8 +2,8 @@
 Autoridades, modelos
 """
 
-from typing import List
 import uuid
+from typing import List
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -33,6 +33,7 @@ class Autoridad(Base, UniversalMixin):
     descripcion: Mapped[str] = mapped_column(String(256))
     descripcion_corta: Mapped[str] = mapped_column(String(64))
     es_jurisdiccional: Mapped[bool] = mapped_column(default=False)
+    es_activo: Mapped[bool] = mapped_column(default=True)
 
     # Hijos
     usuarios: Mapped[List["Usuario"]] = relationship("Usuario", back_populates="autoridad")
@@ -64,4 +65,4 @@ class Autoridad(Base, UniversalMixin):
 
     def __repr__(self):
         """Representación"""
-        return f"<Autoridad {self.id}>"
+        return f"<Autoridad {self.clave}>"

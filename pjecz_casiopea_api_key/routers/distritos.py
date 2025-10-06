@@ -36,8 +36,10 @@ async def detalle(
         distrito = database.query(Distrito).filter_by(clave=clave).one()
     except (MultipleResultsFound, NoResultFound):
         return OneDistritoOut(success=False, message="No existe ese distrito")
+    if distrito.es_activo is False:
+        return OneDistritoOut(success=False, message="No está activo ese distrito")
     if distrito.estatus != "A":
-        return OneDistritoOut(success=False, message="No está habilitado ese distrito")
+        return OneDistritoOut(success=False, message="Este distrito está eliminado")
     return OneDistritoOut(success=True, message=f"Detalle de {clave}", data=DistritoOut.model_validate(distrito))
 
 
@@ -59,4 +61,4 @@ async def paginado(
         consulta = consulta.filter_by(es_distrito=es_distrito)
     if es_jurisdiccional is not None:
         consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
-    return paginate(consulta.filter_by(estatus="A").order_by(Distrito.clave))
+    return paginate(consulta.filter(Distrito.es_activo == True).filter_by(estatus="A").order_by(Distrito.clave))

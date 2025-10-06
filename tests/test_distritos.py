@@ -33,7 +33,7 @@ class TestDistritos(unittest.TestCase):
             self.assertTrue("es_jurisdiccional" in item)
 
     def test_get_distrito_dtrc(self):
-        """Test GET distrito DTRC"""
+        """Test GET distrito clave DTRC"""
         clave = "DTRC"
         response = requests.get(
             url=f"{config['api_base_url']}/distritos/{clave}",

@@ -33,7 +33,7 @@ class CitCliente(Base, UniversalMixin):
     contrasena_md5: Mapped[str] = mapped_column(String(256))
     contrasena_sha256: Mapped[str] = mapped_column(String(256))
     renovacion: Mapped[date]
-    limite_citas_pendientes: Mapped[int] = mapped_column(default=0)
+    limite_citas_pendientes: Mapped[int] = mapped_column(default=3)
 
     # Columnas booleanas
     autoriza_mensajes: Mapped[bool] = mapped_column(default=True)
@@ -49,6 +49,34 @@ class CitCliente(Base, UniversalMixin):
     cit_clientes_recuperaciones: Mapped[List["CitClienteRecuperacion"]] = relationship(
         "CitClienteRecuperacion", back_populates="cit_cliente"
     )
+
+    @property
+    def nombre(self):
+        """Junta nombres, apellido_primero y apellido segundo"""
+        return self.nombres + " " + self.apellido_primero + " " + self.apellido_segundo
+
+    @property
+    def permissions(self):
+        """Entrega un diccionario con todos los permisos si no ha llegado la fecha de renovación"""
+        if self.renovacion < datetime.now().date():
+            return {}
+        # Los permisos son fijos para todos los clientes, donde 1 es solo lectura
+        return {
+            "AUTORIDADES": 1,
+            "CIT CATEGORIAS": 1,
+            "CIT CITAS": 3,
+            "CIT CLIENTES": 1,
+            "CIT RECUPERACIONES": 3,
+            "CIT REGISTROS": 3,
+            "CIT DIAS DISPONIBLES": 1,
+            "CIT HORAS DISPONIBLES": 1,
+            "CIT OFICINAS SERVICIOS": 1,
+            "CIT SERVICIOS": 1,
+            "DISTRITOS": 1,
+            "DOMICILIOS": 1,
+            "MATERIAS": 1,
+            "OFICINAS": 1,
+        }
 
     @property
     def nombre(self):

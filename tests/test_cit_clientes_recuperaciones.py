@@ -13,7 +13,7 @@ class TestCitClientesRecuperaciones(unittest.TestCase):
     """Test cit clientes registros"""
 
     def test_get_cit_clientes_recuperaciones(self):
-        """Test GET cit clientes registros"""
+        """Test GET recuperaciones"""
         response = requests.get(
             url=f"{config['api_base_url']}/cit_clientes_recuperaciones",
             headers={"X-Api-Key": config["api_key"]},
@@ -26,6 +26,7 @@ class TestCitClientesRecuperaciones(unittest.TestCase):
         self.assertTrue("message" in payload)
         self.assertTrue("data" in payload)
         self.assertTrue(isinstance(payload["data"], list))
+        self.assertGreater(len(payload["data"]), 0)
 
 
 if __name__ == "__main__":

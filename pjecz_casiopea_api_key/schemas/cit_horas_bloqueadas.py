@@ -6,8 +6,6 @@ from datetime import date, time
 
 from pydantic import BaseModel, ConfigDict
 
-from ..dependencies.schemas_base import OneBaseOut
-
 
 class CitHoraBloqueadaOut(BaseModel):
     """Esquema para entregar horas bloqueadas"""
@@ -22,7 +20,9 @@ class CitHoraBloqueadaOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OneCitHoraBloqueadaOut(OneBaseOut):
+class OneCitHoraBloqueadaOut(BaseModel):
     """Esquema para entregar un hora bloqueada"""
 
+    success: bool
+    message: str
     data: CitHoraBloqueadaOut | None = None

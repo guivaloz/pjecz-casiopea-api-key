@@ -2,29 +2,23 @@
 Cit Clientes Recuperaciones, esquemas de pydantic
 """
 
-from datetime import date
+from datetime import datetime
 import uuid
 
 from pydantic import BaseModel, ConfigDict
-
-from ..dependencies.schemas_base import OneBaseOut
 
 
 class CitClienteRecuperacionOut(BaseModel):
     """Esquema para entregar recuperaciones"""
 
     id: uuid.UUID
-    relacion_id: uuid.UUID
-    relacion_nombre: str
-    fecha: date
-    nombre: str
-    descripcion: str
-    archivo: str
-    url: str
+    expiracion: datetime
     model_config = ConfigDict(from_attributes=True)
 
 
-class OneCitClienteRecuperacionOut(OneBaseOut):
+class OneCitClienteRecuperacionOut(BaseModel):
     """Esquema para entregar una recuperación"""
 
+    success: bool
+    message: str
     data: CitClienteRecuperacionOut | None = None

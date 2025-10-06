@@ -4,8 +4,6 @@ Usuarios-Oficinas, esquemas de pydantic
 
 from pydantic import BaseModel, ConfigDict
 
-from ..dependencies.schemas_base import OneBaseOut
-
 
 class UsuarioOficinaOut(BaseModel):
     """Esquema para entregar usuarios-oficinas"""
@@ -18,7 +16,9 @@ class UsuarioOficinaOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OneUsuarioOficinaOut(OneBaseOut):
+class OneUsuarioOficinaOut(BaseModel):
     """Esquema para entregar un usuario-oficina"""
 
+    success: bool
+    message: str
     data: UsuarioOficinaOut

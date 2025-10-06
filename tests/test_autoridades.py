@@ -26,15 +26,15 @@ class TestAutoridades(unittest.TestCase):
         self.assertTrue("message" in payload)
         self.assertTrue("data" in payload)
         self.assertTrue(isinstance(payload["data"], list))
+        self.assertGreater(len(payload["data"]), 0)
         for item in payload["data"]:
             self.assertTrue("clave" in item)
             self.assertTrue("descripcion" in item)
             self.assertTrue("descripcion_corta" in item)
             self.assertTrue("es_jurisdiccional" in item)
 
-
     def test_get_autoridad_om_di(self):
-        """Test GET autoridad OM-DI"""
+        """Test GET autoridad clave OM-DI"""
         clave = "OM-DI"
         response = requests.get(
             url=f"{config['api_base_url']}/autoridades/{clave}",

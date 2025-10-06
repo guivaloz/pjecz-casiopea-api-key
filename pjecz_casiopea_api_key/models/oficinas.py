@@ -2,9 +2,9 @@
 Oficinas, modelos
 """
 
+import uuid
 from datetime import time
 from typing import List
-import uuid
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -24,6 +24,8 @@ class Oficina(Base, UniversalMixin):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Claves foráneas
+    distrito_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("distritos.id"))
+    distrito: Mapped["Distrito"] = relationship(back_populates="oficinas")
     domicilio_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("domicilios.id"))
     domicilio: Mapped["Domicilio"] = relationship(back_populates="oficinas")
 
@@ -37,6 +39,7 @@ class Oficina(Base, UniversalMixin):
     cierre: Mapped[time]
     limite_personas: Mapped[int]
     puede_enviar_qr: Mapped[bool] = mapped_column(default=False)
+    es_activo: Mapped[bool] = mapped_column(default=True)
 
     # Hijos
     cit_citas: Mapped[List["CitCita"]] = relationship("CitCita", back_populates="oficina")
