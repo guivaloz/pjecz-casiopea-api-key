@@ -51,6 +51,7 @@ class TestOficinas(unittest.TestCase):
         self.assertTrue("message" in payload)
         self.assertTrue("data" in payload)
         self.assertTrue(isinstance(payload["data"], list))
+        self.assertGreater(len(payload["data"]), 0)
         for item in payload["data"]:
             self.assertTrue("clave" in item)
             self.assertTrue("descripcion" in item)

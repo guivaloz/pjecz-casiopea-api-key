@@ -26,6 +26,7 @@ class TestCitDiasInhabiles(unittest.TestCase):
         self.assertTrue("message" in payload)
         self.assertTrue("data" in payload)
         self.assertTrue(isinstance(payload["data"], list))
+        self.assertGreater(len(payload["data"]), 0)
 
 
 if __name__ == "__main__":
