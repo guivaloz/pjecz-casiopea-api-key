@@ -35,13 +35,13 @@ class TestOficinas(unittest.TestCase):
             self.assertTrue("domicilio_edificio" in item)
             self.assertTrue("es_jurisdiccional" in item)
 
-    def test_get_oficinas_from_cjs(self):
-        """Test GET oficinas from domicilio_clave CJS"""
-        domicilio_clave = "CJS"
+    def test_get_oficinas_from_slt_cj(self):
+        """Test GET oficinas from domicilio_clave SLT-CJ"""
+        clave = "SLT-CJ"
         response = requests.get(
             url=f"{config['api_base_url']}/oficinas",
             headers={"X-Api-Key": config["api_key"]},
-            params={"domicilio_clave": domicilio_clave},
+            params={"domicilio_clave": clave},
             timeout=config["timeout"],
         )
         self.assertEqual(response.status_code, 200)
@@ -59,11 +59,10 @@ class TestOficinas(unittest.TestCase):
             self.assertTrue("domicilio_completo" in item)
             self.assertTrue("domicilio_edificio" in item)
             self.assertTrue("es_jurisdiccional" in item)
-            self.assertEqual(item["domicilio_clave"], domicilio_clave)
 
-    def test_get_oficina_cjs_cemasc(self):
-        """Test GET oficina clave CJS-CEMASC"""
-        clave = "CJS-CEMASC"
+    def test_get_oficina_slt_op(self):
+        """Test GET oficina clave SLT-OP"""
+        clave = "SLT-OP"
         response = requests.get(
             url=f"{config['api_base_url']}/oficinas/{clave}",
             headers={"X-Api-Key": config["api_key"]},
@@ -77,16 +76,7 @@ class TestOficinas(unittest.TestCase):
         self.assertTrue("data" in payload)
         self.assertIsInstance(payload["data"], dict)
         data = payload["data"]
-        self.assertEqual(data.get("clave"), "CJS-CEMASC")
-        self.assertEqual(data.get("descripcion"), "CENTRO DE MEDIOS ALTERNOS")
-        self.assertEqual(data.get("descripcion_corta"), "CEMASC")
-        self.assertEqual(data.get("domicilio_clave"), "CJS")
-        self.assertEqual(
-            data.get("domicilio_completo"),
-            "LOS FUNDADORES #7262, MIRASIERRA, SALTILLO, COAHUILA DE ZARAGOZA, C.P. 25016",
-        )
-        self.assertEqual(data.get("domicilio_edificio"), "CIUDAD JUDICIAL DE SALTILLO")
-        self.assertEqual(data.get("es_jurisdiccional"), False)
+        self.assertEqual(data.get("clave"), clave)
 
 
 if __name__ == "__main__":

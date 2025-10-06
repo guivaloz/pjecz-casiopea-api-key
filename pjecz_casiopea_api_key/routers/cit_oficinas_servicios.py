@@ -36,6 +36,8 @@ async def detalle(
     cit_oficina_servicio = database.query(CitOficinaServicio).get(cit_oficina_servicio_id)
     if not cit_oficina_servicio:
         return OneCitOficinaServicioOut(success=False, message="No existe ese servicio de una oficina")
+    if cit_oficina_servicio.es_activo is False:
+        return OneCitOficinaServicioOut(success=False, message="No está activa esa categoría")
     if cit_oficina_servicio.estatus != "A":
         return OneCitOficinaServicioOut(success=False, message="No está habilitada ese servicio de una oficina")
     return OneCitOficinaServicioOut(
@@ -68,4 +70,8 @@ async def paginado(
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
         consulta = consulta.join(Oficina).filter(Oficina.clave == oficina_clave)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitOficinaServicio.descripcion))
+    return paginate(
+        consulta.filter(CitOficinaServicio.es_activo == True)
+        .filter(CitOficinaServicio.estatus == "A")
+        .order_by(CitOficinaServicio.descripcion)
+    )

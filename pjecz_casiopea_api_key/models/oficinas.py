@@ -2,9 +2,9 @@
 Oficinas, modelos
 """
 
+import uuid
 from datetime import time
 from typing import List
-import uuid
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -45,6 +45,7 @@ class Oficina(Base, UniversalMixin):
     cit_citas: Mapped[List["CitCita"]] = relationship("CitCita", back_populates="oficina")
     cit_horas_bloqueadas: Mapped[List["CitHoraBloqueada"]] = relationship("CitHoraBloqueada", back_populates="oficina")
     cit_oficinas_servicios: Mapped[List["CitOficinaServicio"]] = relationship("CitOficinaServicio", back_populates="oficina")
+    usuarios_oficinas: Mapped[List["UsuarioOficina"]] = relationship("UsuarioOficina", back_populates="oficina")
 
     @property
     def domicilio_clave(self):
