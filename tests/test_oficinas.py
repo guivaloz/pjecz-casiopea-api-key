@@ -35,7 +35,6 @@ class TestOficinas(unittest.TestCase):
             self.assertTrue("domicilio_edificio" in item)
             self.assertTrue("es_jurisdiccional" in item)
 
-
     def test_get_oficinas_from_cjs(self):
         """Test GET oficinas from domicilio_clave CJS"""
         domicilio_clave = "CJS"
@@ -61,7 +60,6 @@ class TestOficinas(unittest.TestCase):
             self.assertTrue("domicilio_edificio" in item)
             self.assertTrue("es_jurisdiccional" in item)
             self.assertEqual(item["domicilio_clave"], domicilio_clave)
-
 
     def test_get_oficina_cjs_cemasc(self):
         """Test GET oficina clave CJS-CEMASC"""

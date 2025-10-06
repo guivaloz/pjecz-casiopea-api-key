@@ -32,7 +32,6 @@ class TestAutoridades(unittest.TestCase):
             self.assertTrue("descripcion_corta" in item)
             self.assertTrue("es_jurisdiccional" in item)
 
-
     def test_get_autoridad_om_di(self):
         """Test GET autoridad clave OM-DI"""
         clave = "OM-DI"
