@@ -2,9 +2,10 @@
 Cit Citas, modelos
 """
 
+import base64
 from datetime import datetime
-import uuid
 from typing import Optional
+import uuid
 
 import pytz
 from sqlalchemy import Enum, ForeignKey, String, Text
@@ -49,6 +50,13 @@ class CitCita(Base, UniversalMixin):
     codigo_asistencia: Mapped[str] = mapped_column(String(6), default="000000")
     codigo_acceso_id: Mapped[Optional[int]]
     codigo_acceso_imagen: Mapped[Optional[bytes]] = mapped_column(BYTEA)
+
+    @property
+    def codigo_acceso_imagen_base64(self):
+        """Codificar en base64 la imagen del codigo de acceso"""
+        if self.codigo_acceso_imagen is None:
+            return None
+        return base64.b64encode(self.codigo_acceso_imagen)
 
     @property
     def cit_cliente_nombre(self):

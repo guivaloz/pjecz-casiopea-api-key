@@ -32,11 +32,8 @@ class Autoridad(Base, UniversalMixin):
     clave: Mapped[str] = mapped_column(String(16), unique=True)
     descripcion: Mapped[str] = mapped_column(String(256))
     descripcion_corta: Mapped[str] = mapped_column(String(64))
-    es_activo: Mapped[bool] = mapped_column(default=True)
     es_jurisdiccional: Mapped[bool] = mapped_column(default=False)
-
-    # Hijos
-    usuarios: Mapped[List["Usuario"]] = relationship("Usuario", back_populates="autoridad")
+    es_activo: Mapped[bool] = mapped_column(default=True)
 
     @property
     def distrito_clave(self):
@@ -65,4 +62,4 @@ class Autoridad(Base, UniversalMixin):
 
     def __repr__(self):
         """Representación"""
-        return f"<Autoridad {self.id}>"
+        return f"<Autoridad {self.clave}>"
