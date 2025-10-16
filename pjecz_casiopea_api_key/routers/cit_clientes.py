@@ -11,7 +11,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
-from ..dependencies.safe_string import safe_email, safe_string, safe_telefono
+from ..dependencies.safe_string import safe_curp, safe_email, safe_string, safe_telefono
 from ..models.cit_clientes import CitCliente
 from ..models.permisos import Permiso
 from ..schemas.cit_clientes import CitClienteOut, OneCitClienteOut
@@ -19,26 +19,26 @@ from ..schemas.cit_clientes import CitClienteOut, OneCitClienteOut
 cit_clientes = APIRouter(prefix="/api/v5/cit_clientes")
 
 
-@cit_clientes.get("/{email}", response_model=OneCitClienteOut)
+@cit_clientes.get("/{curp}", response_model=OneCitClienteOut)
 async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
-    email: str,
+    curp: str,
 ):
-    """Detalle de un cliente a partir de su email"""
+    """Detalle de un cliente a partir de su curp"""
     if current_user.permissions.get("CIT CLIENTES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        email = safe_email(email)
+        curp = safe_curp(curp, is_optional=False, search_fragment=False)
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válido el email")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válido el CURP")
     try:
-        cit_cliente = database.query(CitCliente).filter_by(email=email).one()
+        cit_cliente = database.query(CitCliente).filter_by(curp=curp).one()
     except (MultipleResultsFound, NoResultFound):
-        return OneCitClienteOut(success=False, message="No existe ese cliente")
+        return OneCitClienteOut(success=False, message="No existe ese CURP")
     if cit_cliente.estatus != "A":
         return OneCitClienteOut(success=False, message="No está habilitado ese cliente")
-    return OneCitClienteOut(success=True, message=f"Detalle de {email}", data=CitClienteOut.model_validate(cit_cliente))
+    return OneCitClienteOut(success=True, message=f"Detalle de {curp}", data=CitClienteOut.model_validate(cit_cliente))
 
 
 @cit_clientes.get("", response_model=CustomPage[CitClienteOut])
@@ -65,7 +65,7 @@ async def paginado(
         if apellido_segundo:
             consulta = consulta.filter(CitCliente.apellido_segundo.startswith(apellido_segundo))
     if curp is not None:
-        curp = safe_string(curp)
+        curp = safe_curp(curp, is_optional=True, search_fragment=True)
         if curp:
             consulta = consulta.filter(CitCliente.curp.contains(curp))
     if email is not None:

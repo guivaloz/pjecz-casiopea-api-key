@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
 from .config.settings import get_settings
-
 from .routers.autoridades import autoridades
 from .routers.cit_categorias import cit_categorias
 from .routers.cit_citas import cit_citas
@@ -17,6 +16,7 @@ from .routers.cit_clientes_registros import cit_clientes_registros
 from .routers.cit_dias_disponibles import cit_dias_disponibles
 from .routers.cit_dias_inhabiles import cit_dias_inhabiles
 from .routers.cit_horas_bloqueadas import cit_horas_bloqueadas
+from .routers.cit_horas_disponibles import cit_horas_disponibles
 from .routers.cit_oficinas_servicios import cit_oficinas_servicios
 from .routers.cit_servicios import cit_servicios
 from .routers.distritos import distritos
@@ -29,7 +29,6 @@ from .routers.roles import roles
 from .routers.usuarios import usuarios
 from .routers.usuarios_oficinas import usuarios_oficinas
 from .routers.usuarios_roles import usuarios_roles
-
 
 # FastAPI
 app = FastAPI(
@@ -59,6 +58,7 @@ app.include_router(cit_clientes_registros, tags=["citas"])
 app.include_router(cit_dias_disponibles, tags=["citas"])
 app.include_router(cit_dias_inhabiles, tags=["citas"])
 app.include_router(cit_horas_bloqueadas, tags=["citas"])
+app.include_router(cit_horas_disponibles, tags=["citas"])
 app.include_router(cit_oficinas_servicios, tags=["citas"])
 app.include_router(cit_servicios, tags=["citas"])
 app.include_router(distritos, tags=["autoridades"])

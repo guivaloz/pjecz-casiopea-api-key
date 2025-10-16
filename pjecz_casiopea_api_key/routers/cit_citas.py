@@ -84,6 +84,13 @@ async def crear(
     if current_user.permissions.get("CIT CITAS", 0) < Permiso.CREAR:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
+    # Consultar el cliente
+    cit_cliente = database.query(CitCliente).get(cit_cita_in.cit_cliente_id)
+    if cit_cliente is None:
+        return OneCitCitaOut(success=False, message="No existe ese cliente")
+    if cit_cliente.estatus != "A":
+        return OneCitCitaOut(success=False, message="No está habilitado ese cliente")
+
     # Consultar la oficina
     try:
         oficina_clave = safe_clave(cit_cita_in.oficina_clave)
@@ -159,12 +166,12 @@ async def crear(
     # Validar que la cantidad de citas PENDIENTE del cliente NO haya llegado su límite
     cit_citas_cit_cliente_cantidad = (
         database.query(CitCita)
-        .filter(CitCita.cit_cliente_id == current_user.id)
+        .filter(CitCita.cit_cliente_id == cit_cliente.id)
         .filter(CitCita.estado == "PENDIENTE")
         .filter(CitCita.estatus == "A")
         .count()
     )
-    if cit_citas_cit_cliente_cantidad >= current_user.limite_citas_pendientes:
+    if cit_citas_cit_cliente_cantidad >= cit_cliente.limite_citas_pendientes:
         return OneCitCitaOut(
             success=False,
             message="No se puede crear la cita porque ya se alcanzo el limite de citas pendientes",
@@ -173,7 +180,7 @@ async def crear(
     # Validar que el cliente no tenga una cita pendiente en la misma fecha y hora
     cit_citas_cit_cliente = (
         database.query(CitCita)
-        .filter(CitCita.cit_cliente_id == current_user.id)
+        .filter(CitCita.cit_cliente_id == cit_cliente.id)
         .filter(CitCita.estado == "PENDIENTE")
         .filter(CitCita.inicio >= inicio_dt)
         .filter(CitCita.termino <= termino_dt)
@@ -203,7 +210,7 @@ async def crear(
     # Obtener código de acceso, entrega idAcceso (int), imagen (str), success (bool) y message (str)
     payload = {
         "aplicacion": settings.CONTROL_ACCESO_APLICACION,
-        "referencia": generar_referencia(current_user.email, cit_servicio.clave, oficina.clave, inicio_dt),
+        "referencia": generar_referencia(cit_cliente.email, cit_servicio.clave, oficina.clave, inicio_dt),
         "tipo": "",
     }
     try:
@@ -239,7 +246,7 @@ async def crear(
 
     # Guardar
     cit_cita = CitCita(
-        cit_cliente_id=current_user.id,
+        cit_cliente_id=cit_cliente.id,
         cit_servicio_id=cit_servicio.id,
         oficina_id=oficina.id,
         inicio=inicio_dt,
@@ -318,6 +325,7 @@ async def detalle(
 async def paginado(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
     database: Annotated[Session, Depends(get_db)],
+    cit_cliente_id: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -332,7 +340,14 @@ async def paginado(
     """Paginado de citas"""
     if current_user.permissions.get("CIT CITAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        if cit_cliente_id is not None:
+            cit_cliente_id = safe_uuid(cit_cliente_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la UUID")
     consulta = database.query(CitCita)
+    if cit_cliente_id is not None:
+        consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente_id)
     if creado is not None:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0)
         hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59)

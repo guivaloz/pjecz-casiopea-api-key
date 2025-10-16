@@ -2,7 +2,8 @@
 Cit Clientes, esquemas de pydantic
 """
 
-from datetime import date, datetime
+import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,6 +11,7 @@ from pydantic import BaseModel, ConfigDict
 class CitClienteOut(BaseModel):
     """Esquema para entregar clientes"""
 
+    id: uuid.UUID
     nombres: str
     apellido_primero: str
     apellido_segundo: str
