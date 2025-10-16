@@ -2,8 +2,8 @@
 Cit Citas, esquemas de pydantic
 """
 
-from datetime import date, datetime, time
 import uuid
+from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,7 +18,7 @@ class CitCitaCancelIn(BaseModel):
 class CitCitaIn(BaseModel):
     """Esquema para crear una cita"""
 
-    cit_cliente_email: str
+    cit_cliente_id: uuid.UUID
     cit_servicio_clave: str
     fecha: date
     hora_minuto: time
