@@ -300,6 +300,69 @@ async def disponibles(
     return limite - cantidad
 
 
+@cit_citas.get("/mis_citas", response_model=CustomPage[CitCitaOut])
+async def mis_citas(
+    current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
+    database: Annotated[Session, Depends(get_db)],
+    cit_cliente_id: str = None,
+    curp: str = None,
+):
+    """Paginado de las citas con estado PENDIENTE, del futuro y de un cliente"""
+    if current_user.permissions.get("CIT CITAS", 0) < Permiso.VER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+
+    # Por defecto no hay cliente
+    cit_cliente = None
+
+    # Validar y consultar por cit_cliente_id
+    if cit_cliente_id is not None and curp is None:
+        try:
+            cit_cliente_id = safe_uuid(cit_cliente_id)
+        except ValueError:
+            return CustomPage(success=False, message="No es válido el cit_cliente_id")
+        cit_cliente = database.query(CitCliente).get(cit_cliente_id)
+        if cit_cliente is None:
+            return CustomPage(success=False, message="No existe ese cliente")
+
+    # Validar y consultar por CURP
+    if curp is not None and cit_cliente_id is None:
+        try:
+            curp = safe_curp(curp, is_optional=False, search_fragment=False)
+        except ValueError:
+            return CustomPage(success=False, message="No es válido el CURP")
+        try:
+            cit_cliente = database.query(CitCliente).filter_by(curp=curp).one()
+        except (MultipleResultsFound, NoResultFound):
+            return CustomPage(success=False, message="No existe un cliente con ese CURP")
+
+    # Si no se proporcionó ninguno de los dos parámetros
+    if cit_cliente is None:
+        return CustomPage(success=False, message="No se proporcionó cit_cliente_id ni CURP, debe dar uno de los dos")
+
+    # Validar que cliente NO esté deshabilitado
+    if cit_cliente.estatus != "A":
+        return CustomPage(success=False, message="No está habilitado ese cliente")
+
+    # Consultar
+    consulta = database.query(CitCita)
+
+    # Filtar por el cliente
+    consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente.id)
+
+    # Filtrar por las citas del futuro
+    ahora_dt = datetime.now()
+    consulta = consulta.filter(CitCita.inicio >= ahora_dt)
+
+    # Filtrar por el estado PENDIENTE
+    consulta = consulta.filter(CitCita.estado == "PENDIENTE")
+
+    # Filtar por el estatus "A"
+    consulta = consulta.filter(CitCita.estatus == "A")
+
+    # Entregar
+    return paginate(consulta.order_by(CitCita.inicio.desc()))
+
+
 @cit_citas.get("/{cit_cita_id}", response_model=OneCitCitaOut)
 async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
@@ -392,4 +455,4 @@ async def paginado(
         except ValueError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
         consulta = consulta.join(Oficina).filter(Oficina.clave == oficina_clave)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitCita.id.desc()))
+    return paginate(consulta.filter(CitCita.estatus == "A").order_by(CitCita.id.desc()))
