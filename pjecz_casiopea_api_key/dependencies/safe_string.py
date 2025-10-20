@@ -67,37 +67,6 @@ def safe_email(input_str, search_fragment=False) -> str:
     return final
 
 
-def safe_quincena(input_str) -> str:
-    """Safe quincena"""
-    final = input_str.strip()
-    if re.match(QUINCENA_REGEXP, final) is None:
-        raise ValueError("Quincena invalida")
-    return final
-
-
-def safe_message(input_str, max_len=250, default_output_str="Sin descripción") -> str:
-    """Safe message"""
-    message = str(input_str)
-    if message == "":
-        return default_output_str
-    return (message[:max_len] + "...") if len(message) > max_len else message
-
-
-def safe_rfc(input_str, is_optional=False, search_fragment=False) -> str:
-    """Safe RFC"""
-    if not isinstance(input_str, str):
-        return ""
-    stripped = input_str.strip()
-    if is_optional and stripped == "":
-        return ""
-    clean_string = re.sub(r"[^a-zA-Z0-9]+", " ", unidecode(stripped))
-    without_spaces = re.sub(r"\s+", "", clean_string)
-    final = without_spaces.upper()
-    if search_fragment is False and re.match(RFC_REGEXP, final) is None:
-        raise ValueError("RFC inválido")
-    return final
-
-
 def safe_string(input_str, max_len=250, do_unidecode=True, save_enie=False, to_uppercase=True) -> str:
     """Safe string"""
     if not isinstance(input_str, str):

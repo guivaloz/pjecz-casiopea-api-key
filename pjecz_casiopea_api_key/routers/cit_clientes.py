@@ -103,6 +103,12 @@ async def paginado(
     if current_user.permissions.get("CIT CLIENTES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(CitCliente)
+
+    # Filtrar por nombres y apellidos
+    if nombres is not None:
+        nombres = safe_string(nombres)
+        if nombres:
+            consulta = consulta.filter(CitCliente.nombres.contains(nombres))
     if apellido_primero is not None:
         apellido_primero = safe_string(apellido_primero)
         if apellido_primero:
@@ -111,20 +117,28 @@ async def paginado(
         apellido_segundo = safe_string(apellido_segundo)
         if apellido_segundo:
             consulta = consulta.filter(CitCliente.apellido_segundo.startswith(apellido_segundo))
-    if curp is not None:
-        curp = safe_curp(curp, is_optional=True, search_fragment=True)
-        if curp:
-            consulta = consulta.filter(CitCliente.curp.contains(curp))
-    if email is not None:
-        email = safe_email(email, search_fragment=True)
-        if email:
-            consulta = consulta.filter(CitCliente.email.contains(email))
-    if nombres is not None:
-        nombres = safe_string(nombres)
-        if nombres:
-            consulta = consulta.filter(CitCliente.nombres.contains(nombres))
+
+    # Filtrar por CURP y e-mail
+    if curp is not None or email is not None:
+        consulta = consulta.join(CitCliente)
+        if curp is not None:
+            try:
+                curp = safe_curp(curp, is_optional=False, search_fragment=False)
+                consulta = consulta.filter(CitCliente.curp == curp)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el CURP")
+        if email is not None:
+            try:
+                email = safe_email(email, search_fragment=False)
+                consulta = consulta.filter(CitCliente.email == email)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el e-mail")
+
+    # Filtrar por teléfono
     if telefono is not None:
         telefono = safe_telefono(telefono)
         if telefono:
             consulta = consulta.filter(CitCliente.telefono == telefono)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitCliente.email))
+
+    # Entregar
+    return paginate(consulta.filter(CitCliente.estatus == "A").order_by(CitCliente.email))

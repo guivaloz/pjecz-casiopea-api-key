@@ -160,7 +160,7 @@ async def listado(
     # Consultar la oficina
     oficina_clave = safe_clave(oficina_clave)
     if oficina_clave == "":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
+        return ListCitHoraDisponibleOut(success=False, message="No es válida la clave de la oficina")
     try:
         oficina = database.query(Oficina).filter_by(clave=oficina_clave).one()
     except (MultipleResultsFound, NoResultFound):
@@ -171,7 +171,7 @@ async def listado(
     # Consultar el servicio
     cit_servicio_clave = safe_clave(cit_servicio_clave)
     if cit_servicio_clave == "":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave del servicio")
+        return ListCitHoraDisponibleOut(success=False, message="No es válida la clave del servicio")
     try:
         cit_servicio = database.query(CitServicio).filter_by(clave=cit_servicio_clave).one()
     except (MultipleResultsFound, NoResultFound):

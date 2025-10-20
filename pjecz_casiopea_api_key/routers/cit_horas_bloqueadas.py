@@ -59,9 +59,8 @@ async def paginado(
     if fecha is not None:
         consulta = consulta.filter(CitHoraBloqueada.fecha == fecha)
     if oficina_clave is not None:
-        try:
-            oficina_clave = safe_clave(oficina_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
+        oficina_clave = safe_clave(oficina_clave)
+        if oficina_clave == "":
+            return CustomPage(success=False, message="No es válida la clave de la oficina")
         consulta = consulta.join(Oficina).filter(Oficina.clave == oficina_clave)
     return paginate(consulta.filter_by(estatus="A").order_by(CitHoraBloqueada.id.desc()))

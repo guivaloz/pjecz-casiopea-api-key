@@ -59,14 +59,24 @@ async def paginado(
     if current_user.permissions.get("CIT CLIENTES RECUPERACIONES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(CitClienteRecuperacion)
+
+    # Filtrar por CURP y e-mail
     if curp is not None or email is not None:
         consulta = consulta.join(CitCliente)
-        curp = safe_curp(curp, search_fragment=True)
-        if curp:
-            consulta = consulta.filter(CitCliente.curp.contains(curp))
-        email = safe_email(email, search_fragment=True)
-        if email:
-            consulta = consulta.filter(CitCliente.email.contains(email))
+        if curp is not None:
+            try:
+                curp = safe_curp(curp, is_optional=False, search_fragment=False)
+                consulta = consulta.filter(CitCliente.curp == curp)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el CURP")
+        if email is not None:
+            try:
+                email = safe_email(email, search_fragment=False)
+                consulta = consulta.filter(CitCliente.email == email)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el e-mail")
+
+    # Filtrar por fechas de creación
     if creado is not None:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0)
         hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59)
@@ -79,4 +89,6 @@ async def paginado(
             year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59
         )
         consulta = consulta.filter(CitClienteRecuperacion.creado <= hasta_dt)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitClienteRecuperacion.id.desc()))
+
+    # Entregar
+    return paginate(consulta.filter(CitClienteRecuperacion.estatus == "A").order_by(CitClienteRecuperacion.id.desc()))

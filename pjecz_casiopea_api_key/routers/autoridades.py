@@ -30,9 +30,8 @@ async def detalle(
     """Detalle de una autoridad a partir de su clave"""
     if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        clave = safe_clave(clave)
-    except ValueError:
+    clave = safe_clave(clave)
+    if clave == "":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         autoridad = database.query(Autoridad).filter_by(clave=clave).one()
@@ -57,15 +56,13 @@ async def paginado(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(Autoridad)
     if distrito_clave is not None:
-        try:
-            distrito_clave = safe_clave(distrito_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave del distrito")
+        distrito_clave = safe_clave(distrito_clave)
+        if distrito_clave == "":
+            return CustomPage(success=False, message="No es válida la clave del distrito")
         consulta = consulta.join(Distrito).filter(Distrito.clave == distrito_clave)
     if materia_clave is not None:
-        try:
-            materia_clave = safe_clave(materia_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la materia")
+        materia_clave = safe_clave(materia_clave)
+        if materia_clave == "":
+            return CustomPage(success=False, message="No es válida la clave de la materia")
         consulta = consulta.join(Materia).filter(Materia.clave == materia_clave)
     return paginate(consulta.filter(Autoridad.es_activo == True).filter(Autoridad.estatus == "A").order_by(Autoridad.clave))

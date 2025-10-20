@@ -64,7 +64,7 @@ class CustomPage(AbstractPage[T], Generic[T], ABC):
 
         return cls(
             success=True,
-            message="Success",
+            message="Consulta exitosa",
             data=items,
             total=total,
             limit=raw_params.limit,
