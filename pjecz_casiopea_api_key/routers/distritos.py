@@ -28,9 +28,8 @@ async def detalle(
     """Detalle de una distrito a partir de su clave"""
     if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        clave = safe_clave(clave)
-    except ValueError:
+    clave = safe_clave(clave)
+    if clave == "":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         distrito = database.query(Distrito).filter_by(clave=clave).one()

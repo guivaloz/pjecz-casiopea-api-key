@@ -16,7 +16,7 @@ from ..dependencies.safe_string import safe_curp, safe_email, safe_string, safe_
 from ..models.cit_clientes import CitCliente
 from ..models.cit_clientes_registros import CitClienteRegistro
 from ..models.permisos import Permiso
-from ..schemas.cit_clientes_registros import CitClienteRegistroOut, OneCitClienteRegistroOut, CrearCitClienteRegistroIn
+from ..schemas.cit_clientes_registros import CitClienteRegistroOut, CrearCitClienteRegistroIn, OneCitClienteRegistroOut
 
 EXPIRACION_HORAS = 48
 
@@ -48,18 +48,18 @@ async def solicitar(
 
     # Validar CURP
     try:
-        curp = safe_curp(crear_cit_cliente_registro_in.curp)
+        curp = safe_curp(crear_cit_cliente_registro_in.curp, is_optional=False, search_fragment=False)
     except ValueError:
         return OneCitClienteRegistroOut(success=False, message="No es válido el CURP")
 
-    # Validar telefono
+    # Validar teléfono
     telefono = safe_telefono(crear_cit_cliente_registro_in.telefono)
     if telefono == "":
         return OneCitClienteRegistroOut(success=False, message="No es válido el teléfono")
 
     # Validar email
     try:
-        email = safe_email(crear_cit_cliente_registro_in.email)
+        email = safe_email(crear_cit_cliente_registro_in.email, search_fragment=False)
     except ValueError:
         return OneCitClienteRegistroOut(success=False, message="No es válido el email")
 
@@ -149,6 +149,12 @@ async def paginado(
     if current_user.permissions.get("CIT CLIENTES REGISTROS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(CitClienteRegistro)
+
+    # Filtrar por nombres y apellidos
+    if nombres is not None:
+        nombres = safe_string(nombres)
+        if nombres:
+            consulta = consulta.filter(CitClienteRegistro.nombres.contains(nombres))
     if apellido_primero is not None:
         apellido_primero = safe_string(apellido_primero)
         if apellido_primero:
@@ -157,6 +163,8 @@ async def paginado(
         apellido_segundo = safe_string(apellido_segundo)
         if apellido_segundo:
             consulta = consulta.filter(CitClienteRegistro.apellido_segundo.startswith(apellido_segundo))
+
+    # Filtrar por fechas de creación
     if creado is not None:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0)
         hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59)
@@ -169,20 +177,27 @@ async def paginado(
             year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59
         )
         consulta = consulta.filter(CitClienteRegistro.creado <= hasta_dt)
-    if curp is not None:
-        curp = safe_string(curp)
-        if curp:
-            consulta = consulta.filter(CitClienteRegistro.curp.contains(curp))
-    if email is not None:
-        email = safe_email(email, search_fragment=True)
-        if email:
-            consulta = consulta.filter(CitClienteRegistro.email.contains(email))
-    if nombres is not None:
-        nombres = safe_string(nombres)
-        if nombres:
-            consulta = consulta.filter(CitClienteRegistro.nombres.contains(nombres))
+
+    # Filtrar por CURP y e-mail
+    if curp is not None or email is not None:
+        consulta = consulta.join(CitCliente)
+        if curp is not None:
+            try:
+                curp = safe_curp(curp, is_optional=False, search_fragment=False)
+                consulta = consulta.filter(CitCliente.curp == curp)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el CURP")
+        if email is not None:
+            try:
+                email = safe_email(email, search_fragment=False)
+                consulta = consulta.filter(CitCliente.email == email)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el e-mail")
+
+    # Filtrar por teléfono
     if telefono is not None:
         telefono = safe_telefono(telefono)
         if telefono:
             consulta = consulta.filter(CitClienteRegistro.telefono == telefono)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitClienteRegistro.id.desc()))
+
+    return paginate(consulta.filter(CitClienteRegistro.estatus == "A").order_by(CitClienteRegistro.id.desc()))

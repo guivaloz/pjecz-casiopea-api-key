@@ -14,9 +14,9 @@ from ..dependencies.exceptions import MyNotValidParamError
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
 from ..dependencies.safe_string import safe_clave, safe_email, safe_string
 from ..models.autoridades import Autoridad
-from ..models.usuarios import Usuario
 from ..models.permisos import Permiso
-from ..schemas.usuarios import UsuarioOut, OneUsuarioOut
+from ..models.usuarios import Usuario
+from ..schemas.usuarios import OneUsuarioOut, UsuarioOut
 
 usuarios = APIRouter(prefix="/api/v5/usuarios")
 
@@ -31,7 +31,7 @@ async def detalle(
     if current_user.permissions.get("USUARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        email = safe_email(email)
+        email = safe_email(email, search_fragment=False)
     except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válido el email")
     try:
@@ -67,10 +67,9 @@ async def paginado(
         if apellido_materno != "":
             consulta = consulta.filter(Usuario.apellido_materno.contains(apellido_materno))
     if autoridad_clave is not None:
-        try:
-            autoridad_clave = safe_clave(autoridad_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la autoridad")
+        autoridad_clave = safe_clave(autoridad_clave)
+        if autoridad_clave == "":
+            return CustomPage(success=False, message="No es válida la clave de la autoridad")
         consulta = consulta.join(Autoridad).filter(Autoridad.clave == autoridad_clave)
     if email is not None:
         try:

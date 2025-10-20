@@ -47,7 +47,7 @@ async def cancelar(
     try:
         cit_cita_id = safe_uuid(cit_cita_id)
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la UUID")
+        return OneCitCitaOut(success=False, message="No es válida la UUID")
     cit_cita = database.query(CitCita).get(cit_cita_id)
     if not cit_cita:
         return OneCitCitaOut(success=False, message="No existe esa cita")
@@ -92,10 +92,9 @@ async def crear(
         return OneCitCitaOut(success=False, message="No está habilitado ese cliente")
 
     # Consultar la oficina
-    try:
-        oficina_clave = safe_clave(cit_cita_in.oficina_clave)
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
+    oficina_clave = safe_clave(cit_cita_in.oficina_clave)
+    if oficina_clave == "":
+        return OneCitCitaOut(success=False, message="No es válida la clave de la oficina")
     try:
         oficina = database.query(Oficina).filter_by(clave=oficina_clave).one()
     except (MultipleResultsFound, NoResultFound):
@@ -104,10 +103,9 @@ async def crear(
         return OneCitCitaOut(success=False, message="No está habilitada esa oficina")
 
     # Consultar el servicio
-    try:
-        cit_servicio_clave = safe_clave(cit_cita_in.cit_servicio_clave)
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave del servicio")
+    cit_servicio_clave = safe_clave(cit_cita_in.cit_servicio_clave)
+    if cit_servicio_clave == "":
+        return OneCitCitaOut(success=False, message="No es válida la clave del servicio")
     try:
         cit_servicio = database.query(CitServicio).filter_by(clave=cit_servicio_clave).one()
     except (MultipleResultsFound, NoResultFound):
@@ -300,6 +298,69 @@ async def disponibles(
     return limite - cantidad
 
 
+@cit_citas.get("/mis_citas", response_model=CustomPage[CitCitaOut])
+async def mis_citas(
+    current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
+    database: Annotated[Session, Depends(get_db)],
+    cit_cliente_id: str = None,
+    curp: str = None,
+):
+    """Paginado de las citas con estado PENDIENTE, del futuro y de un cliente"""
+    if current_user.permissions.get("CIT CITAS", 0) < Permiso.VER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+
+    # Por defecto no hay cliente
+    cit_cliente = None
+
+    # Validar y consultar por cit_cliente_id
+    if cit_cliente_id is not None and curp is None:
+        try:
+            cit_cliente_id = safe_uuid(cit_cliente_id)
+        except ValueError:
+            return CustomPage(success=False, message="No es válido el cit_cliente_id")
+        cit_cliente = database.query(CitCliente).get(cit_cliente_id)
+        if cit_cliente is None:
+            return CustomPage(success=False, message="No existe ese cliente")
+
+    # Validar y consultar por CURP
+    if curp is not None and cit_cliente_id is None:
+        try:
+            curp = safe_curp(curp, is_optional=False, search_fragment=False)
+        except ValueError:
+            return CustomPage(success=False, message="No es válido el CURP")
+        try:
+            cit_cliente = database.query(CitCliente).filter_by(curp=curp).one()
+        except (MultipleResultsFound, NoResultFound):
+            return CustomPage(success=False, message="No existe un cliente con ese CURP")
+
+    # Si no se proporcionó ninguno de los dos parámetros
+    if cit_cliente is None:
+        return CustomPage(success=False, message="No se proporcionó cit_cliente_id ni CURP, debe dar uno de los dos")
+
+    # Validar que cliente NO esté deshabilitado
+    if cit_cliente.estatus != "A":
+        return CustomPage(success=False, message="No está habilitado ese cliente")
+
+    # Consultar
+    consulta = database.query(CitCita)
+
+    # Filtar por el cliente
+    consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente.id)
+
+    # Filtrar por las citas del futuro
+    ahora_dt = datetime.now()
+    consulta = consulta.filter(CitCita.inicio >= ahora_dt)
+
+    # Filtrar por el estado PENDIENTE
+    consulta = consulta.filter(CitCita.estado == "PENDIENTE")
+
+    # Filtar por el estatus "A"
+    consulta = consulta.filter(CitCita.estatus == "A")
+
+    # Entregar
+    return paginate(consulta.order_by(CitCita.inicio.desc()))
+
+
 @cit_citas.get("/{cit_cita_id}", response_model=OneCitCitaOut)
 async def detalle(
     current_user: Annotated[UsuarioInDB, Depends(get_current_active_user)],
@@ -340,14 +401,20 @@ async def paginado(
     """Paginado de citas"""
     if current_user.permissions.get("CIT CITAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        if cit_cliente_id is not None:
+
+    # Validar cit_cliente_id
+    if cit_cliente_id is not None:
+        try:
             cit_cliente_id = safe_uuid(cit_cliente_id)
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la UUID")
+        except ValueError:
+            return CustomPage(success=False, message="No es válida la UUID")
+
+    # Consultar
     consulta = database.query(CitCita)
     if cit_cliente_id is not None:
         consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente_id)
+
+    # Filtrar por creado
     if creado is not None:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0)
         hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59)
@@ -360,20 +427,30 @@ async def paginado(
             year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59
         )
         consulta = consulta.filter(CitCita.creado <= hasta_dt)
+
+    # Filtrar por CURP y e-mail
     if curp is not None or email is not None:
         consulta = consulta.join(CitCliente)
         if curp is not None:
-            curp = safe_curp(curp)
-            if curp:
+            try:
+                curp = safe_curp(curp, is_optional=False, search_fragment=False)
                 consulta = consulta.filter(CitCliente.curp == curp)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el CURP")
         if email is not None:
-            email = safe_email(email)
-            if email:
+            try:
+                email = safe_email(email, search_fragment=False)
                 consulta = consulta.filter(CitCliente.email == email)
+            except ValueError:
+                return CustomPage(success=False, message="No es válido el e-mail")
+
+    # Filtrar por estado
     if estado is not None:
         estado = safe_string(estado)
         if estado in CitCita.ESTADOS:
             consulta = consulta.filter(CitCita.estado == estado)
+
+    # Filtrar por inicio
     if inicio is not None:
         desde_dt = datetime(year=inicio.year, month=inicio.month, day=inicio.day, hour=0, minute=0, second=0)
         hasta_dt = datetime(year=inicio.year, month=inicio.month, day=inicio.day, hour=23, minute=59, second=59)
@@ -386,10 +463,13 @@ async def paginado(
             year=inicio_hasta.year, month=inicio_hasta.month, day=inicio_hasta.day, hour=23, minute=59, second=59
         )
         consulta = consulta.filter(CitCita.inicio <= hasta_dt)
+
+    # Filtrar por oficina_clave
     if oficina_clave is not None:
-        try:
-            oficina_clave = safe_clave(oficina_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la oficina")
+        oficina_clave = safe_clave(oficina_clave)
+        if oficina_clave == "":
+            return CustomPage(success=False, message="No es válida la clave de la oficina")
         consulta = consulta.join(Oficina).filter(Oficina.clave == oficina_clave)
-    return paginate(consulta.filter_by(estatus="A").order_by(CitCita.id.desc()))
+
+    # Entregar
+    return paginate(consulta.filter(CitCita.estatus == "A").order_by(CitCita.id.desc()))

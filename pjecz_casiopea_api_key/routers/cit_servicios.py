@@ -29,9 +29,8 @@ async def detalle(
     """Detalle de un servicio a partir de su clave"""
     if current_user.permissions.get("CIT SERVICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        clave = safe_clave(clave)
-    except ValueError:
+    clave = safe_clave(clave)
+    if clave == "":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave")
     try:
         cit_servicio = database.query(CitServicio).filter_by(clave=clave).one()
@@ -55,10 +54,9 @@ async def paginado(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     consulta = database.query(CitServicio)
     if cit_categoria_clave is not None:
-        try:
-            cit_categoria_clave = safe_clave(cit_categoria_clave)
-        except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No es válida la clave de la categoria")
+        cit_categoria_clave = safe_clave(cit_categoria_clave)
+        if cit_categoria_clave == "":
+            return CustomPage(success=False, message="No es válida la clave de la categoria")
         consulta = consulta.join(CitCategoria).filter(CitCategoria.clave == cit_categoria_clave)
     return paginate(
         consulta.filter(CitServicio.es_activo == True).filter(CitServicio.estatus == "A").order_by(CitServicio.clave)
