@@ -30,6 +30,7 @@ class CitCitaOut(BaseModel):
     """Esquema para entregar citas"""
 
     id: uuid.UUID
+    cit_cliente_id: uuid.UUID
     cit_cliente_nombre: str
     cit_cliente_curp: str
     cit_cliente_email: str
