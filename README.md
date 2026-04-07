@@ -1,6 +1,6 @@
 # pjecz-casiopea-api-key
 
-API con autentificacíon para administrar el sistema de citas.
+API con autentificación por API-Key para comunicación con otros sistemas.
 
 ## Variables de entorno
 
@@ -29,4 +29,13 @@ CONTROL_ACCESO_URL=
 CONTROL_ACCESO_API_KEY=
 CONTROL_ACCESO_APLICACION=
 CONTROL_ACCESO_TIMEOUT=
+```
+## Instalación con uv
+
+```bash
+# En desarrollo
+uv sync
+
+# En producción
+uv sync --no-dev
 ```
