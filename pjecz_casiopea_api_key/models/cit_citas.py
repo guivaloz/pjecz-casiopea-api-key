@@ -49,7 +49,7 @@ class CitCita(Base, UniversalMixin):
     asistencia: Mapped[bool] = mapped_column(default=False)
     codigo_asistencia: Mapped[str] = mapped_column(String(6), default="000000")
     codigo_acceso_id: Mapped[Optional[int]]
-    codigo_acceso_imagen: Mapped[Optional[bytes]] = mapped_column(BYTEA)
+    codigo_acceso_url: Mapped[Optional[str]] = mapped_column(String(512))
 
     @property
     def codigo_acceso_imagen_base64(self):

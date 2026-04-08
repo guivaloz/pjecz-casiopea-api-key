@@ -209,7 +209,12 @@ async def crear(
     payload = {
         "aplicacion": settings.CONTROL_ACCESO_APLICACION,
         "referencia": generar_referencia(cit_cliente.email, cit_servicio.clave, oficina.clave, inicio_dt),
-        "tipo": "",
+        "nombres": cit_cliente.nombres,
+        "apellidos": f"{cit_cliente.apellido_primero} {cit_cliente.apellido_segundo}",
+        "correoElectronico": cit_cliente.email,
+        "telefono": f"+52{cit_cliente.telefono}",
+        "fecha": inicio_dt.isoformat(timespec="minutes"),
+        "cita": True,
     }
     try:
         respuesta = requests.post(
@@ -232,15 +237,15 @@ async def crear(
     codigo_acceso_id = contenido.get("idAcceso")
     if not codigo_acceso_id:
         return OneCitCitaOut(success=False, message="ERROR: Faltó el IdAcceso en la respuesta de Control Acceso")
-    codigo_acceso_imagen = contenido.get("imagen")
-    if not codigo_acceso_imagen:
+    codigo_acceso_url = contenido.get("imagen")
+    if not codigo_acceso_url:
         return OneCitCitaOut(success=False, message="ERROR: Faltó la imagen en la respuesta de Control Acceso")
-    try:
-        codigo_acceso_imagen = decodificar_imagen(codigo_acceso_imagen)
-    except ValueError as error:
-        return OneCitCitaOut(
-            success=False, message=f"ERROR: No se pudo decodificar la imagen del código de acceso {str(error)}"
-        )
+    # try:
+    #     codigo_acceso_imagen = decodificar_imagen(codigo_acceso_imagen)
+    # except ValueError as error:
+    #     return OneCitCitaOut(
+    #         success=False, message=f"ERROR: No se pudo decodificar la imagen del código de acceso {str(error)}"
+        # )
 
     # Guardar
     cit_cita = CitCita(
@@ -253,6 +258,8 @@ async def crear(
         estado="PENDIENTE",
         asistencia=False,
         codigo_asistencia=generar_codigo_asistencia(),
+        codigo_acceso_id=codigo_acceso_id,
+        codigo_acceso_url=codigo_acceso_url,
         cancelar_antes=cancelar_antes,
     )
     database.add(cit_cita)
@@ -358,7 +365,7 @@ async def mis_citas(
     consulta = consulta.filter(CitCita.estatus == "A")
 
     # Entregar
-    return paginate(consulta.order_by(CitCita.inicio.desc()))
+    return paginate(database,consulta.order_by(CitCita.inicio.desc()))
 
 
 @cit_citas.get("/{cit_cita_id}", response_model=OneCitCitaOut)
