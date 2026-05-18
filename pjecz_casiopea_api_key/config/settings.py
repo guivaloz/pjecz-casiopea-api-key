@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     DB_USER: str = os.getenv("DB_USER", "")
     FERNET_KEY: str = os.getenv("FERNET_KEY", "")
     ORIGINS: str = os.getenv("ORIGINS", "http://127.0.0.1:3000,http://localhost:3000")
+    SENDGRID_API_KEY: str = os.getenv("SENDGRID_API_KEY", "")
+    SENDGRID_FROM_EMAIL: str = os.getenv("SENDGRID_FROM_EMAIL", "")
     SALT: str = os.getenv("SALT", "")
     TZ: str = os.getenv("TZ", "America/Mexico_City")
 
