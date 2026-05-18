@@ -13,6 +13,10 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 - Creación de servicio de envío de emails con plantillas.
 - Documentación en 'README.md', 'CONTRIBUTING.md' y este 'CHANGELOG.md'.
 
+### 🛠️ Cambiado
+
+- Cambiar asunto de email de PJECZ a SAJI.
+
 ## [0.1.2] - 2026-05-07
 
 ### ✨ Mejoras
