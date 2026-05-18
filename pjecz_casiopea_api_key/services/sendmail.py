@@ -82,7 +82,7 @@ class PlantillaCitaCreada(PlantillaEmailBase):
     Plantilla para la creación de una cita.
     """
     template_name = "cita_creada.jinja2"
-    subject = "Cita Agendada en el Sistema de Citas PJECZ"
+    subject = "Cita Agendada en el Sistema de Citas SAJI"
     _variables_contenido: dict[str, str] = {
         'nombre_cliente': '',
         'id': '',
@@ -112,7 +112,7 @@ class PlantillaCitaCancelada(PlantillaEmailBase):
     Plantilla para la cancelación de una cita.
     """
     template_name = "cita_cancelada.jinja2"
-    subject = "Cita Cancelada en el Sistema de Citas PJECZ"
+    subject = "Cita Cancelada en el Sistema de Citas SAJI"
     _variables_contenido: dict[str, str] = {
         'nombre_cliente': '',
         'id': '',
