@@ -36,6 +36,7 @@ app = FastAPI(
     description="API con autentificación del sistema de citas.",
     docs_url="/docs",
     redoc_url=None,
+    version="1.3.0",
 )
 
 # CORSMiddleware
