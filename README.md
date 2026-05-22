@@ -1,14 +1,16 @@
 # 🏛️ [pjecz-casiopea-api-key]
 
 > Aplicación tipo API para la comunicación con el sistema de gestión SAJI.
-> Proyectos relacionados:
-> - [pjecz-casiopea-api-oauth2](https://github.com/PJECZ/pjecz-casiopea-api-oauth2)
-> - [pjecz-casiopea-api-key](https://github.com/PJECZ/pjecz-casiopea-api-key)
-> - [pjecz-casiopea-reactjs](https://github.com/PJECZ/pjecz-casiopea-reactjs)
+
+Proyectos relacionados:
+- [pjecz-casiopea-api-oauth2](https://github.com/PJECZ/pjecz-casiopea-api-oauth2)
+- [pjecz-casiopea-api-key](https://github.com/PJECZ/pjecz-casiopea-api-key)
+- [pjecz-casiopea-reactjs](https://github.com/PJECZ/pjecz-casiopea-reactjs)
 
 ---
 
 ## 📋 Tabla de Contenidos
+
 - [Descripción General](#descripción-general)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Requisitos Previos](#requisitos-previos)
@@ -20,9 +22,11 @@
 ---
 
 ## 📖 Descripción General
+
 Es parte de un conjunto de proyectos para hacer funcionar el sistema de Citas al cual acceder el público. En esta API hacemos que el sistema de gestión SAJI se comunique con este sistema, creado citas, cancelandolas o listando las citas para cada persona.
 
 ## 🛠️ Tecnologías Utilizadas
+
 * **Lenguaje:** Python 3.14
 * **Framework:** FastAPI
 * **Base de Datos:** PostgreSQL
@@ -30,6 +34,7 @@ Es parte de un conjunto de proyectos para hacer funcionar el sistema de Citas al
 * **Otros:** Sendgrid
 
 ## ⚙️ Requisitos Previos
+
 Lista de herramientas necesarias para correr el proyecto localmente:
 - Git
 - Python
@@ -38,23 +43,27 @@ Lista de herramientas necesarias para correr el proyecto localmente:
 ## 🚀 Instalación y Configuración
 
 ### 1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/PJECZ/pjecz-casiopea-api-key.git
-   cd pjecz-casiopea-api-key
-   ```
+
+```bash
+git clone https://github.com/PJECZ/pjecz-casiopea-api-key.git
+cd pjecz-casiopea-api-key
+```
 
 ### 2. Configurar variables de entorno:
+
 Copia el archivo de ejemplo y edita las credenciales necesarias (Base de datos, API Keys):
 ```
 cp .env.example .env
 ```
 
 ### 3. Instalar dependencias:
+
 ```bash
 uv sync
 ```
 
 ### 4. Iniciar el servidor de desarrollo:
+
 ```bash
 uv run uvicorn --host=0.0.0.0 --port=8001 --reload pjecz_casiopea_api_key.main:app
 ```

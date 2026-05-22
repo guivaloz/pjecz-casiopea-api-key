@@ -76,6 +76,7 @@ class CitCliente(Base, UniversalMixin):
             "DOMICILIOS": 1,
             "MATERIAS": 1,
             "OFICINAS": 1,
+            "EXP JUZGADOS": 1,
         }
 
     @property
