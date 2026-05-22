@@ -13,6 +13,9 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 - Añadido campo `instrucciones` al modelo `cit_servicios` y añadirlo en la entrega de su _endpoint_.
 - Descripción de la versión en la documentación _swagger_ hecha por defecto.
 
+### 🛠️ Cambiado
+
+- El límite por defecto para el paginado subió de `10` a `25`.
 
 ## [1.2.0] - 2026-05-20
 
