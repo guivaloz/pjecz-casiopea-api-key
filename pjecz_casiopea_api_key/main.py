@@ -21,6 +21,7 @@ from .routers.cit_oficinas_servicios import cit_oficinas_servicios
 from .routers.cit_servicios import cit_servicios
 from .routers.distritos import distritos
 from .routers.domicilios import domicilios
+from .routers.exp_juzgados import exp_juzgados
 from .routers.materias import materias
 from .routers.modulos import modulos
 from .routers.oficinas import oficinas
@@ -64,6 +65,7 @@ app.include_router(cit_oficinas_servicios, tags=["citas"])
 app.include_router(cit_servicios, tags=["citas"])
 app.include_router(distritos, tags=["autoridades"])
 app.include_router(domicilios, tags=["oficinas"])
+app.include_router(exp_juzgados, tags=["expedientes juzgados"])
 app.include_router(materias, tags=["autoridades"])
 app.include_router(modulos, include_in_schema=False)
 app.include_router(oficinas, tags=["oficinas"])
