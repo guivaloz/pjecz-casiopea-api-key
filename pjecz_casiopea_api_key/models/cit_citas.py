@@ -50,6 +50,8 @@ class CitCita(Base, UniversalMixin):
     codigo_asistencia: Mapped[str] = mapped_column(String(6), default="000000")
     codigo_acceso_id: Mapped[Optional[int]]
     codigo_acceso_url: Mapped[Optional[str]] = mapped_column(String(512))
+    codigo_barras: Mapped[Optional[str]] = mapped_column(String(13))
+    codigo_barras_url: Mapped[Optional[str]] = mapped_column(String(512))
 
     @property
     def codigo_acceso_imagen_base64(self):
