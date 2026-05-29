@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     SENDGRID_FROM_EMAIL: str = os.getenv("SENDGRID_FROM_EMAIL", "")
     SALT: str = os.getenv("SALT", "")
     TZ: str = os.getenv("TZ", "America/Mexico_City")
+    GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+    GCS_BUCKET_NAME: str = os.getenv("GCS_BUCKET_NAME", "")
 
     class Config:
         """Load configuration"""

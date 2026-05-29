@@ -12,7 +12,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from ..config.settings import Settings, get_settings
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
-from ..dependencies.control_acceso import decodificar_imagen, generar_referencia
+from ..dependencies.control_acceso import generar_referencia
 from ..dependencies.database import Session, get_db
 from ..dependencies.fastapi_pagination_custom_page import CustomPage
 from ..dependencies.pwgen import generar_codigo_asistencia
@@ -28,6 +28,7 @@ from ..schemas.cit_citas import CitCitaIn, CitCitaOut, OneCitCitaOut
 from .cit_dias_disponibles import listar_dias_disponibles
 from .cit_horas_disponibles import listar_horas_disponibles
 from ..services.sendmail import MyRequestError, Email, PlantillaCitaCancelada, PlantillaCitaCreada
+from ..services.codigo_barras import CodigoBarras
 
 LIMITE_CITAS_PENDIENTES = 3
 
@@ -222,47 +223,59 @@ async def crear(
         if cancelar_antes.weekday() == 5:  # Si es sábado, se cambia a viernes
             cancelar_antes = cancelar_antes - timedelta(days=1)
 
-    # Obtener código de acceso, entrega idAcceso (int), imagen (str), success (bool) y message (str)
-    payload = {
-        "aplicacion": settings.CONTROL_ACCESO_APLICACION,
-        "referencia": generar_referencia(cit_cliente.email, cit_servicio.clave, oficina.clave, inicio_dt),
-        "nombres": cit_cliente.nombres,
-        "apellidos": f"{cit_cliente.apellido_primero} {cit_cliente.apellido_segundo}",
-        "correoElectronico": cit_cliente.email,
-        "telefono": f"+52{cit_cliente.telefono}",
-        "fecha": inicio_dt.isoformat(timespec="minutes"),
-        "cita": True,
-    }
-    try:
-        respuesta = requests.post(
-            url=settings.CONTROL_ACCESO_URL,
-            headers={"X-Api-Key": settings.CONTROL_ACCESO_API_KEY},
-            timeout=settings.CONTROL_ACCESO_TIMEOUT,
-            json=payload,
-        )
-    except requests.exceptions.ConnectionError as error:
-        return OneCitCitaOut(success=False, message=f"ERROR: No responde Control Acceso: {str(error)}")
-    if respuesta.status_code != 200:
-        return OneCitCitaOut(
-            success=False, message=f"ERROR: No fue código 200 la respuesta de Control Acceso: {respuesta.text}"
-        )
-    contenido = respuesta.json()
-    if contenido.get("success") is False:
-        return OneCitCitaOut(
-            success=False, message=f"ERROR: Falló la obtención del Código de Acceso: {contenido.get('message')}"
-        )
-    codigo_acceso_id = contenido.get("idAcceso")
-    if not codigo_acceso_id:
-        return OneCitCitaOut(success=False, message="ERROR: Faltó el IdAcceso en la respuesta de Control Acceso")
-    codigo_acceso_url = contenido.get("imagen")
-    if not codigo_acceso_url:
-        return OneCitCitaOut(success=False, message="ERROR: Faltó la imagen en la respuesta de Control Acceso")
-    # try:
-    #     codigo_acceso_imagen = decodificar_imagen(codigo_acceso_imagen)
-    # except ValueError as error:
-    #     return OneCitCitaOut(
-    #         success=False, message=f"ERROR: No se pudo decodificar la imagen del código de acceso {str(error)}"
-        # )
+    # Variables para códigos de acceso
+    codigo_acceso_id = None
+    codigo_acceso_url = None
+    codigo_barras_num = None
+    codigo_barras_url = None
+    if oficina.puede_enviar_qr:
+        # Obtener código de acceso, entrega idAcceso (int), imagen (str), success (bool) y message (str)
+        payload = {
+            "aplicacion": settings.CONTROL_ACCESO_APLICACION,
+            "referencia": generar_referencia(cit_cliente.email, cit_servicio.clave, oficina.clave, inicio_dt),
+            "nombres": cit_cliente.nombres,
+            "apellidos": f"{cit_cliente.apellido_primero} {cit_cliente.apellido_segundo}",
+            "correoElectronico": cit_cliente.email,
+            "telefono": f"+52{cit_cliente.telefono}",
+            "fecha": inicio_dt.isoformat(timespec="minutes"),
+            "cita": True,
+        }
+        try:
+            respuesta = requests.post(
+                url=settings.CONTROL_ACCESO_URL,
+                headers={"X-Api-Key": settings.CONTROL_ACCESO_API_KEY},
+                timeout=settings.CONTROL_ACCESO_TIMEOUT,
+                json=payload,
+            )
+        except requests.exceptions.ConnectionError as error:
+            return OneCitCitaOut(success=False, message=f"ERROR: No responde Control Acceso: {str(error)}")
+        if respuesta.status_code != 200:
+            return OneCitCitaOut(
+                success=False, message=f"ERROR: No fue código 200 la respuesta de Control Acceso: {respuesta.text}"
+            )
+        contenido = respuesta.json()
+        if contenido.get("success") is False:
+            return OneCitCitaOut(
+                success=False, message=f"ERROR: Falló la obtención del Código de Acceso: {contenido.get('message')}"
+            )
+        codigo_acceso_id = contenido.get("idAcceso")
+        if not codigo_acceso_id:
+            return OneCitCitaOut(success=False, message="ERROR: Faltó el IdAcceso en la respuesta de Control Acceso")
+        codigo_acceso_url = contenido.get("imagen")
+        if not codigo_acceso_url:
+            return OneCitCitaOut(success=False, message="ERROR: Faltó la imagen en la respuesta de Control Acceso")
+
+        # Crear el código de barras de asistencia
+        codigo_barras = CodigoBarras(database)
+        try:
+            codigo_barras_num, codigo_barras_url = codigo_barras.crear_y_subir()
+        except ConnectionError as e:
+            # Captura errores de conexión o de la API de Google Storage
+            return OneCitCitaOut(success=False, message=f"ERROR: Falló la comunicación para generar el código de barras de asistencia. {e}")
+        except Exception as e:
+            # Captura cualquier otro error inesperado durante la generación
+            return OneCitCitaOut(success=False, message=f"ERROR: No se pudo generar el código de barras de asistencia. {e}")
+
 
     # Guardar
     cit_cita = CitCita(
@@ -278,6 +291,8 @@ async def crear(
         codigo_acceso_id=codigo_acceso_id,
         codigo_acceso_url=codigo_acceso_url,
         cancelar_antes=cancelar_antes,
+        codigo_barras=codigo_barras_num,
+        codigo_barras_url=codigo_barras_url,
     )
     database.add(cit_cita)
     database.commit()
@@ -291,8 +306,8 @@ async def crear(
         servicio=cit_cita.cit_servicio_descripcion,
         fecha_hora_cita=cit_cita.inicio,
         notas=cit_cita.notas,
-        codigo_asistencia=cit_cita.codigo_asistencia,
         codigo_qr_url=cit_cita.codigo_acceso_url,
+        codigo_barras_url=cit_cita.codigo_barras_url,
     )
 
     # Envío de email
@@ -388,12 +403,12 @@ async def mis_citas(
     # Filtar por el cliente
     consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente.id)
 
-    # Filtrar por las citas del futuro
+    # Filtrar por las citas del futuro. Solo mostrar las de hoy hacía futuro.
     ahora_dt = datetime.now()
     consulta = consulta.filter(CitCita.inicio >= ahora_dt)
 
     # Filtrar por el estado PENDIENTE
-    consulta = consulta.filter(CitCita.estado == "PENDIENTE")
+    consulta = consulta.filter(CitCita.estado.in_(["PENDIENTE", "ASISTIO"]))
 
     # Filtar por el estatus "A"
     consulta = consulta.filter(CitCita.estatus == "A")
