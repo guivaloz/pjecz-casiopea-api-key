@@ -228,7 +228,7 @@ async def crear(
     codigo_acceso_url = None
     codigo_barras_num = None
     codigo_barras_url = None
-    if oficina.puede_agendar_citas:
+    if oficina.puede_enviar_qr:
         # Obtener código de acceso, entrega idAcceso (int), imagen (str), success (bool) y message (str)
         payload = {
             "aplicacion": settings.CONTROL_ACCESO_APLICACION,
@@ -306,7 +306,6 @@ async def crear(
         servicio=cit_cita.cit_servicio_descripcion,
         fecha_hora_cita=cit_cita.inicio,
         notas=cit_cita.notas,
-        codigo_asistencia=cit_cita.codigo_asistencia,
         codigo_qr_url=cit_cita.codigo_acceso_url,
         codigo_barras_url=cit_cita.codigo_barras_url,
     )
