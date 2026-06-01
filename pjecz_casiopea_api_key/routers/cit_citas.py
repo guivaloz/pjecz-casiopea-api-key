@@ -404,8 +404,8 @@ async def mis_citas(
     consulta = consulta.filter(CitCita.cit_cliente_id == cit_cliente.id)
 
     # Filtrar por las citas del futuro. Solo mostrar las de hoy hacía futuro.
-    ahora_dt = datetime.now()
-    consulta = consulta.filter(CitCita.inicio >= ahora_dt)
+    hoy = date.today()
+    consulta = consulta.filter(CitCita.inicio >= hoy)
 
     # Filtrar por el estado PENDIENTE
     consulta = consulta.filter(CitCita.estado.in_(["PENDIENTE", "ASISTIO"]))
