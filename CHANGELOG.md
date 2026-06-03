@@ -3,6 +3,31 @@
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [1.4.0] - 2026-05-29
+
+### ✨ Mejoras
+
+- Al entregar las citas agendadas de un cliente, mostrar las que se encuentran en estado de "Pendiente" o en "Asistió". Para que en caso de que este siendo atendido en su cita actual, la mantenga activa por ese día.
+- Al enviar el email de cita_creada si la oficina no tiene activo del campo de `pude_enviar_qr`. No genera ni envía los códigos de acceso (QR y Barras).
+- Validar el campo booleano `oficinas.puede_enviar_qr` para incluir el código QR y código de barras de asistencia en los emails al crear una cita.
+- Añadido campos nuevos al modelo de `cit_citas` para almacenar el código de barras de asistencia.
+- Nuevo servicio para creación de un código de barras para identificar la cita.
+
+### ❌ Eliminado
+
+- Código de asistencia en la plantilla de email al crear una cita nueva.
+
+### ⚙️ Requerimientos
+
+- Añadir paquetes de librerías con `uv add [lib]`:
+    - `python-barcode pillow`
+    - `google-cloud-storage`
+
+- Añadir nuevas variables de entorno. Para almacenamiento del código de barras generado como imagen.
+    - `GOOGLE_APPLICATION_CREDENTIALS`
+    - `GCS_BUCKET_NAME`
+
+
 ## [1.3.0] - 2026-05-22
 
 ### ✨ Mejoras
