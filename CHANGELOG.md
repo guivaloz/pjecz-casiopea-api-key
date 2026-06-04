@@ -3,6 +3,14 @@
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [1.4.1] - 2026-06-04
+
+### 🛠️ Cambios
+
+- Cambio de texto en las plantillas de email "Código de Barras" por "Código de Asistencia".
+- Cambio de texto en las plantillas de email "Código QR" por "Código de Acceso".
+
+
 ## [1.4.0] - 2026-05-29
 
 ### ✨ Mejoras
@@ -38,7 +46,7 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 - Añadido campo `instrucciones` al modelo `cit_servicios` y añadirlo en la entrega de su _endpoint_.
 - Descripción de la versión en la documentación _swagger_ hecha por defecto.
 
-### 🛠️ Cambiado
+### 🛠️ Cambios
 
 - El límite por defecto para el paginado subió de `10` a `25`.
 
@@ -51,7 +59,7 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 - Creación de servicio de envío de emails con plantillas.
 - Documentación en 'README.md', 'CONTRIBUTING.md' y este 'CHANGELOG.md'.
 
-### 🛠️ Cambiado
+### 🛠️ Cambios
 
 - Cambiar asunto de email de PJECZ a SAJI.
 
