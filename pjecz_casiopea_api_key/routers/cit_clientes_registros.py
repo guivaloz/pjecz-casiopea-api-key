@@ -18,7 +18,7 @@ from ..models.cit_clientes_registros import CitClienteRegistro
 from ..models.permisos import Permiso
 from ..schemas.cit_clientes_registros import CitClienteRegistroOut, CrearCitClienteRegistroIn, OneCitClienteRegistroOut
 
-EXPIRACION_HORAS = 48
+EXPIRACION_HORAS = 24
 
 cit_clientes_registros = APIRouter(prefix="/api/v5/cit_clientes_registros")
 
