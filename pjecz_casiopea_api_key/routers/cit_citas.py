@@ -9,6 +9,7 @@ import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
+from sqlalchemy import func
 
 from ..config.settings import Settings, get_settings
 from ..dependencies.authentications import UsuarioInDB, get_current_active_user
@@ -179,10 +180,11 @@ async def crear(
             message="No se puede crear la cita porque ya se alcanzo el limite de personas en la oficina",
         )
 
-    # Validar que la cantidad de citas PENDIENTE del cliente NO haya llegado su límite
+    # Validar que la cantidad de citas PENDIENTE del cliente y NO sean pasados, NO haya llegado a su límite
     cit_citas_cit_cliente_cantidad = (
         database.query(CitCita)
         .filter(CitCita.cit_cliente_id == cit_cliente.id)
+        .filter(func.date(CitCita.inicio) >= datetime.now().date())
         .filter(CitCita.estado == "PENDIENTE")
         .filter(CitCita.estatus == "A")
         .count()
